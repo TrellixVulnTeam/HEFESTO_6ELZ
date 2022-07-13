@@ -1,1 +1,1 @@
-print('hello')
+import test_puconversion
