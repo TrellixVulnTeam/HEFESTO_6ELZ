@@ -1,3 +1,6 @@
 {
-    "python.analysis.extraPaths": ["${workspaceFolder}/tests"]
+    "python.defaultInterpreterPath": "D:\\Estudos\\TCC\\HEFESTO\\venv\\Scripts\\python",
+    "code-runner.executorMap": {
+        "python": "D:\\Estudos\\TCC\\HEFESTO\\venv\\Scripts\\python",
+    }
 }
