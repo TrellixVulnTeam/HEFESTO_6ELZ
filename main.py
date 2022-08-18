@@ -213,6 +213,9 @@ class Generators():
         """
         self.impedance[key] = impedance
 
+    # def __repr__(self) -> str:
+    #     return [str(self), self.id]
+
 
 class Transformers():
     """This class models the eletric component of eletric power systems know as transformer.
@@ -275,7 +278,7 @@ class ShortTLines():
         """
         ShortTLines.instances.append(self)
         self.id = len(ShortTLines.instances)
-        self.z_series = series_impedance
+        self.series_impedance = series_impedance
         self.terminals = terminals
     
     def set_series_impedance(self, key, impedance):
@@ -286,7 +289,7 @@ class ShortTLines():
         :param voltage: Value representing a type of impedance.
         :type voltage: Impedance() or float.
         """
-        self.z_series[key] = impedance
+        self.series_impedance[key] = impedance
 
 
 class MediumTLines():
@@ -305,16 +308,16 @@ class MediumTLines():
         """
         MediumTLines.instances.append(self)
         self.id = len(MediumTLines.instances)
-        self.z_series = series_impedance
-        self.z_shunt = shunt_impedance
-        self.z_shunt_per_side = cp.deepcopy(shunt_impedance)
+        self.series_impedance = series_impedance
+        self.shunt_impedance = shunt_impedance
+        self.shunt_impedance_per_side = cp.deepcopy(shunt_impedance)
         self.terminals = terminals
         self.correct_shunt_impedance_per_side()
     
     def correct_shunt_impedance_per_side(self):
         """This method corrects the value of shunt impedance per side.
         """
-        self.z_shunt_per_side['nominal'].mag = 2 * self.z_shunt['nominal'].mag
+        self.shunt_impedance_per_side['nominal'].mag = 2 * self.shunt_impedance['nominal'].mag
         
     def set_shunt_impedance_per_side(self, key, impedance):
         """This method sets the shunt impedance per side of the medium transmission line. Since the impedance is a dict this method receives the key and the value to attribute.
@@ -324,7 +327,7 @@ class MediumTLines():
         :param voltage: Value representing a type of impedance.
         :type voltage: Impedance() or float.
         """
-        self.z_shunt_per_side[key] = impedance
+        self.shunt_impedance_per_side[key] = impedance
 
     def set_series_impedance(self, key, impedance):
         """This method sets the series impedance of the medium transmission line. Since the impedance is a dict this method receives the key and the value to attribute.
@@ -334,7 +337,7 @@ class MediumTLines():
         :param voltage: Value representing a type of impedance.
         :type voltage: Impedance() or float.
         """
-        self.z_series[key] = impedance
+        self.series_impedance[key] = impedance
     
     def set_shunt_impedance(self, key, impedance):
         """This method sets the shunt impedance of the medium transmission line. Since the impedance is a dict this method receives the key and the value to attribute.
@@ -344,7 +347,7 @@ class MediumTLines():
         :param voltage: Value representing a type of impedance.
         :type voltage: Impedance() or float.
         """
-        self.z_shunt[key] = impedance
+        self.shunt_impedance[key] = impedance
 
 
 class PowerFactor():
@@ -382,7 +385,6 @@ class Loads():
         self.power = power
         self.pf = power_factor
         self.terminals = terminals
-        self.impedance = impedance
 
 
 class Bars():
@@ -547,24 +549,7 @@ class PuConvesions():
                     gen_nimpedance = mc.get_value(gen.impedance['nominal'])
                     gen.set_impedance('base', pow(gen_nvoltage, 2) / gen_npower)
                     gen.set_impedance('pu', gen_nimpedance * gen.impedance['base'] * self.base_p / pow(bar.voltage, 2))
-            pdict = ''
-            for key, value in gen.voltage.items():
-                if key == 'nominal':
-                    pdict = f'Generator[{gen.id}] voltage => {key}: {value.mag}{value.multiplier}{value.measurement_unit}'
-                elif key == 'base':
-                    pdict += f', {key}: {value} V'
-                else:
-                    pdict += f', {key}: {value} pu'
-            print(pdict)
-
-            for key, value in gen.impedance.items():
-                if key == 'nominal':
-                    pdict = f'Generator[{gen.id}] impedance => {key}: {value.mag} %'
-                elif key == 'base':
-                    pdict += f', {key}: {value} ohm'
-                else:
-                    pdict += f', {key}: {value} pu'
-            print(pdict)
+            Print.print_default_dict(gen)
 
     def transformer_to_pu(self, bars, components):
         # Grab transformers and put them on a list
@@ -585,16 +570,8 @@ class PuConvesions():
                     tran_nimpedance = mc.get_value(tran.impedance['nominal'])
                     tran.set_impedance('base', pow(tran_nv, 2) / tran_npower)
                     tran.set_impedance('pu', tran_nimpedance * tran.impedance['base'] * self.base_p / pow(bar.voltage, 2))
-            pdict = ''
-            for key, value in tran.impedance.items():
-                if key == 'nominal':
-                    pdict = f'Transformer[{tran.id}] impedance => {key}: {value.mag} %'
-                elif key == 'base':
-                    pdict += f', {key}: {value} ohm'
-                else:
-                    pdict += f', {key}: {value} pu'
-            print(pdict)
-
+            Print.print_default_dict(tran)
+            
     def tlines_to_pu(self, bars, components):
         tlines = [component for component in components if isinstance(component, ShortTLines) or isinstance(component, MediumTLines)]
         mc = MagConversion()
@@ -602,40 +579,17 @@ class PuConvesions():
             for bar in bars:
                 if bar.id in line.terminals:
                     line.set_series_impedance('base', pow(bar.voltage, 2) / self.base_p)
-                    line_series_impedance = line.z_series['nominal'].mag
+                    line_series_impedance = line.series_impedance['nominal'].mag
                     if isinstance(line, MediumTLines):
-                        line_shunt_impedance = line.z_shunt['nominal'].mag
-                        line.set_shunt_impedance('base', line.z_series['base'])
-                        line.set_shunt_impedance('pu', line_shunt_impedance / line.z_series['base'])
-                        line_shunt_impedance_per_side = line.z_shunt_per_side['nominal'].mag
-                        line.set_shunt_impedance_per_side('base', line.z_series['base'])
-                        line.set_shunt_impedance_per_side('pu', line_shunt_impedance_per_side / line.z_series['base'])
-                    line.set_series_impedance('pu', line_series_impedance / line.z_series['base'])
-            pdict = ''
-            for key, value in line.z_series.items():
-                if key == 'nominal':
-                    pdict = f'Line[{line.id}] series impedance => {key}: {value.mag} ohm'
-                elif key == 'base':
-                    pdict += f', {key}: {value} ohm'
-                else:
-                    pdict += f', {key}: {value} pu'
-            print(pdict)
-            for key, value in line.z_shunt.items():
-                if key == 'nominal':
-                    pdict = f'Line[{line.id}] shunt impedance => {key}: {value.mag} ohm'
-                elif key == 'base':
-                    pdict += f', {key}: {value} ohm'
-                else:
-                    pdict += f', {key}: {value} pu'
-            print(pdict)
-            for key, value in line.z_shunt_per_side.items():
-                if key == 'nominal':
-                    pdict = f'Line[{line.id}] shunt impedance per side => {key}: {value.mag} ohm'
-                elif key == 'base':
-                    pdict += f', {key}: {value} ohm'
-                else:
-                    pdict += f', {key}: {value} pu'
-            print(pdict)
+                        line_shunt_impedance = line.shunt_impedance['nominal'].mag
+                        line.set_shunt_impedance('base', line.series_impedance['base'])
+                        line.set_shunt_impedance('pu', line_shunt_impedance / line.series_impedance['base'])
+                        line_shunt_impedance_per_side = line.shunt_impedance_per_side['nominal'].mag
+                        line.set_shunt_impedance_per_side('base', line.series_impedance['base'])
+                        line.set_shunt_impedance_per_side('pu', line_shunt_impedance_per_side / line.series_impedance['base'])
+                    line.set_series_impedance('pu', line_series_impedance / line.series_impedance['base'])
+            Print.print_default_dict(line)
+
 
     def loads_to_pu(self, bars, components):
         loads = [component for component in components if isinstance(component, Loads)]
@@ -650,16 +604,25 @@ class PuConvesions():
                 load_active_power = mc.get_value(load.power['nominal'])
                 load.power['pu'] = load_active_power / load_base_power
             load_base_power = mc.get_value(load.power['base'])
+            Print.print_default_dict(load)
             
-            pdict = ''
-            for key, value in load.power.items():
-                if key == 'nominal':
-                    pdict = f'Load[{load.id}] power => {key}: {value.mag} {value.multiplier}{value.measurement_unit}'
-                elif key == 'base':
-                    pdict += f', {key}: {value.mag} {value.multiplier}{value.measurement_unit}'
-                else:
-                    pdict += f', {key}: {value} pu'
-            print(pdict)
+
+
+class Print():
+    @staticmethod
+    def print_default_dict(instance):
+        mc = MagConversion()
+        print(f"{str(instance)[10:-30]}[{instance.id}]")
+        for attr, value in instance.__dict__.items():
+            if 'impedance' in attr:
+                print(f"{attr} = {str(value)[:12]}{mc.get_value(value['nominal'])}{str(value)[61:]}")
+            if 'voltage' in attr:
+                print(f"{attr} = {str(value)[:12]}{mc.get_value(value['nominal'])}{str(value)[59:]}")
+            if 'power' in attr:
+                if isinstance(value, Power):
+                    print(f"{attr} = {value.mag}{value.multiplier}{value.measurement_unit}")
+                elif isinstance(value, dict):
+                    print(f"{attr} = {str(value)[:12]}{value['nominal'].mag}{value['nominal'].multiplier}{value['nominal'].measurement_unit}{str(value)[57:67]}{value['base'].mag}{value['base'].multiplier}{value['base'].measurement_unit}{str(value)[112:]}")
 
 
 def main():
@@ -718,7 +681,6 @@ def main():
     # for component in components: print(f"{component}")
     # Instantiating bars
     bars = [Bars() for i in Bars().get_bars(components)]
-    print(bars)
     # Setting bars Id's
     for i in range(len(bars)): bars[i].set_id(i)
     # Setting adjacent bars
@@ -730,7 +692,7 @@ def main():
     bars[head.id].set_voltage(base_values[1])
     # Calculating base voltages
     head.set_voltages(components, bars)
-    for bar in bars: print(f'Vb{bar.id}: {bar.voltage} V')
+    # for bar in bars: print(f'Vb{bar.id}: {bar.voltage} V')
 
     # Pu Conversion
     conv = PuConvesions(MagConversion().get_value(base_values[0]))
