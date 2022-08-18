@@ -1,26 +1,37 @@
 from typing import List
-import numpy as np
-import cmath as cm
-import math as m
+# import numpy as np
+# import cmath as cm
+# import math as m
 import copy as cp
 
 
 class DefaultDictFormat():
+    """This class is responsable for hosting the static method get_dict_struct."""
     @staticmethod
     def get_dict_struct(nominal, base=None):
+        """This method returns a dictionary in the following structure: {'nominal': nominal, 'base': None, 'pu': None} when just the nominal parameter is given and the folowing: {'nominal': nominal, 'base': Base, 'pu': None} when the optional parameter is given.
+
+        :param nominal: Object to be used as value under the key 'nominal'.
+        :type nominal: Object can be a instance of 1 of these 3: Voltage(), Impedance() or Power().
+        :param base: When parameter nominal is an instance of Power() the base is given as the system power base, defaults to None.
+        :type base: Power(), optional.
+        :return: Dictionary as described in method description .
+        :rtype: Dict.
+        """
         keys = ['nominal', 'base', 'pu']
         struct = {key: None for key in keys}
         struct['nominal'] = nominal
-        if base != None:
+        if base is not None:
             struct['base'] = base
         return struct
 
-d = DefaultDictFormat()
-# vlt1 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 1))
-# zput1 = d.get_dict_struct(Impedance('pu%', 10))
 
 class MagConversion():
+    """This class is responsable for converting to and from engineering notation with the methods: get_value() and get_eng_notation().
+    """
     def __init__(self) -> None:
+        """Constructor method. Atributtes predetermined dictionary to instance variable multipliers.
+        """
         self.multipliers = {
             'p': pow(10, -12),
             'n': pow(10, -9),
@@ -36,53 +47,118 @@ class MagConversion():
 
 
     def get_value(self, eng_notation):
+        """Returns the corresponding float value given a dict with the key 'nominal' and object in value field with the attribute .multiplier which should correspond with this class instance attribute .multipliers.
+
+        :param eng_notation: Received dict with object of type Voltage(), Impedance() or Power() in the format: {'nominal': object, ...}.
+        :type eng_notation: Dict.
+        :return: A float corresponding to the given engineering notetion.
+        :rtype: float.
+        """
         if isinstance(eng_notation, dict):
             return self.multipliers[eng_notation['nominal'].multiplier] * eng_notation['nominal'].mag
         else:
             return self.multipliers[eng_notation.multiplier] * eng_notation.mag
-#print(MagConversion().get_value(power))
-# {'nominal': Voltage('k', 13.8, 1), 'base': None, 'pu': None}
 
     def get_eng_notation(self, value):
+        """Returns the engineering notation of a given value in the form of a tuple where the 1st element is the string representing the multiplier in the notation and the 2nd element the value associated with the multiplier.
+
+        :param value: A float or int to be converted to engineering notation.
+        :type value: float, int.
+        :return: A tuple containg like (multiplier, value).
+        :rtype: (str, float).
+        """
         for multiplier, meq in self.multipliers.items():
             if value / meq >= 1 and value / meq < 1000:
                 return (multiplier, value / meq)
-# print(MagConversion().get_eng_notation(13800))
 
 
 class Number():
+    """This class purpose is to be inherited by other classes.
+    """
     def __init__(self, mag, multiplier, measurement_unit) -> None:
+        """Generator method.
+
+        :param mag: Magnitude of a number in engineering notation.
+        :type mag: float or int.
+        :param multiplier: String representing the multiplier in engineering notation .
+        :type multiplier: str.
+        :param measurement_unit: String representing the unit of the measurement i.e 'V' for 'volts', 'W' for active power, etc.
+        :type measurement_unit: str.
+        """
         self.mag = mag
         self.multiplier = multiplier
         self.measurement_unit = measurement_unit
         
 
 class Power(Number):
+    """This class represents the eletric characteristic know as power.
+
+    :param Number: Object from which to inherit common characteristics.
+    :type Number: Number().
+    """
     def __init__(self, mag, multiplier, measurement_unit) -> None:
+        """Constructor method. Same parameters as parent class.
+
+        :param mag: Magnitude of power in engineering notation.
+        :type mag: float or int.
+        :param multiplier: String representing the multiplier in engineering notation.
+        :type multiplier: str.
+        :param measurement_unit: Power can be specified in 'W' or 'VA'. This parameters specifies which one.
+        :type measurement_unit: str.
+        """
         super().__init__(mag, multiplier, measurement_unit)
-# p = Power(25, 'M', 'VA')
-# print(f'Power Object: {p.mag} {p.multiplier}{p.measurement_unit}')
 
 
 class Voltage(Number):
+    """This class represents the eletric characteristic know as voltage.
+
+    :param Number: Object from which to inherit common characteristics.
+    :type Number: Number().
+    """
     def __init__(self, mag, multiplier, measurement_unit, bar) -> None:
+        """Constructor method. Same parameters as parent class with addition of the parameter bar.
+
+        :param mag: Magnitude of voltage in engineering notation.
+        :type mag: float or int.
+        :param multiplier: String representing the multiplier in engineering notation .
+        :type multiplier: str.
+        :param measurement_unit: A voltage is measured in volts which is specified in this parameter.
+        :type measurement_unit: str.
+        :param bar: Since voltage is measured in a bar this parameter was added. A bar is identified by it's number.
+        :type bar: int.
+        """
         super().__init__(mag, multiplier, measurement_unit)
         self.bar = bar
 
-# v = d.get_dict_struct(Voltage(13.2, 'k', 'V', 1))
-# print(f'Voltage object: {v}')
-# print(f"Nominal Voltage: {v['nominal'].mag}{v['nominal'].multiplier}{v['nominal'].measurement_unit} in bar {v['nominal'].bar}")
-
 
 class Impedance(Number):
+    """This class represents the eletric characteristic know as impedance.
+
+    :param Number: Object from which to inherit common characteristics.
+    :type Number: Number().
+    """
     def __init__(self, mag, multiplier, measurement_unit, characteristic, lenght=None) -> None:
+        """Constructor method. Same parameters as parent class with addition of the parameteres characteristic and length (optional).
+
+        :param mag: Magnitude of impedance in engineering notation.
+        :type mag: float or int.
+        :param multiplier: String representing the multiplier in engineering notation .
+        :type multiplier: str.
+        :param measurement_unit: A impedance can be measured in 'ohm', 'ohm/km', 'kohm*km' or '%'. Which one is specified in this parameter.
+        :type measurement_unit: str.
+        :param characteristic: A impedance can be in series or shunt, which one is specified in this parameter.
+        :type characteristic: str.
+        :param lenght: When a impedance measurement unit is given in 'ohm/km' or 'kohm*km' a length is needed in order to get the concentraded parameter, defaults to None.
+        :type lenght: float or int, optional.
+        """
         super().__init__(mag, multiplier, measurement_unit)
         self.characteristic = characteristic
         self.len = lenght
         self.check_format()
 
     def check_format(self):
-        mc = MagConversion()
+        """This method checks if the Impedance was specified as a distributed parameter, if It has this method converts to a concentrated parameter aproprieate for calculations.
+        """
         if self.measurement_unit == 'ohm/km':
             self.mag *= self.len
             self.measurement_unit = 'ohm'
@@ -93,60 +169,71 @@ class Impedance(Number):
                 self.mag = self.mag * 1000 / self.len
             self.measurement_unit = 'ohm'
 
-# z = d.get_dict_struct(Impedance(10, '%', 'pu', 'series'))
-# print(f'Impedance struct: {z}')
-# print(f"Impedance object: {z['nominal'].mag}{z['nominal'].multiplier}{z['nominal'].measurement_unit} type {z['nominal'].characteristic}")
-# z = d.get_dict_struct(Impedance(100j, ' ', 'ohm', 'series'))
-# print(f'Impedance struct: {z}')
-# print(f"Impedance object: {z['nominal'].mag}{z['nominal'].multiplier}{z['nominal'].measurement_unit} type {z['nominal'].characteristic}")
-# z = d.get_dict_struct(Impedance(1 + 0.4j, ' ', 'ohm/km', 'series', 80))
-# print(f'Impedance struct: {z}')
-# print(f"Impedance object: {z['nominal'].mag}{z['nominal'].multiplier}{z['nominal'].measurement_unit} type {z['nominal'].characteristic}")
-# z = d.get_dict_struct(Impedance(280j, ' ', 'kohm*km', 'shunt', 100))
-# print(f'Impedance struct: {z}')
-# print(f"Impedance object: {z['nominal'].mag}{z['nominal'].multiplier}{z['nominal'].measurement_unit} type {z['nominal'].characteristic}")
-
 
 class Generators():
+    """This class models the eletric component of eletric power systems know as generator.
+    """
     instances = []
-    counter = 0
-    def __init__(self, power, voltage, impedance, terminals) -> None:
+    def __init__(self, impedance, terminals, power=None, voltage=None) -> None:
+        """Constructor method.
+
+        :param impedance: A generator is modeled as having a series impedance. This parameter specifies the impedance chacteristics.
+        :type impedance: dict {'nominal': Impedance(), 'base': None, 'pu': None}.
+        :param terminals: A generator has a pair of terminals for this representation. This parameter specifies them.
+        :type terminals: tuple.
+        :param power: A generator has a nominal power, when is of interest this parameter specifies that, defaults to None.
+        :type power: Power(), optional.
+        :param voltage: A generator has a nominal voltage, when is of interest this parameter specifies that, defaults to None.
+        :type voltage: dict {'nominal': Voltage(), 'base': None, 'pu': None}, optional.
+        """
         Generators.instances.append(self)
-        Generators.counter += 1
-        self.id = Generators.counter
+        self.id = len(Generators.instances)
         self.power = power
         self.voltage = voltage
         self.impedance = impedance
         self.terminals = terminals
     
     def set_voltage(self, key, voltage):
+        """This method sets the voltage of the generator. Since the voltage is a dict this method receives the key and the value to attribute.
+
+        :param key: Dict key for the voltage attribute.
+        :type key: str.
+        :param voltage: Value representing a type of voltage.
+        :type voltage: Voltage() or float.
+        """
         self.voltage[key] = voltage
 
     def set_impedance(self, key, impedance):
+        """This method sets the impedance of the generator. Since the impedance is a dict this method receives the key and the value to attribute.
+
+        :param key: Dict key for the impedance attribute.
+        :type key: str.
+        :param voltage: Value representing a type of impedance.
+        :type voltage: Impedance() or float.
+        """
         self.impedance[key] = impedance
 
 
-# pg1, tg1 = Power(30, 'M', 'VA'), (0, 1)
-# vg1 = d.get_dict_struct(Voltage(15, 'k', 'V', 1))
-# zpug1 = d.get_dict_struct(Impedance(8, '%', 'pu', 'series'))
-# g1 = Generators(pg1, vg1, zpug1, tg1)
-
-# print(f"Generator object: {g1}")
-# print(f"Generator power: {g1.power}")
-# print(f"Generator power: {g1.power.mag}{g1.power.multiplier}{g1.power.measurement_unit}")
-# print(f"Generator voltage: {g1.voltage}")
-# print(f"Generator nominal voltage: {g1.voltage['nominal'].mag}{g1.voltage['nominal'].multiplier}{g1.voltage['nominal'].measurement_unit} in bar {g1.voltage['nominal'].bar}")
-# print(f"Generator impedance: {g1.impedance}")
-# print(f"Generator nominal impedance: {g1.impedance['nominal'].mag}{g1.impedance['nominal'].multiplier}{g1.impedance['nominal'].measurement_unit} type {g1.impedance['nominal'].characteristic}")
-
-
 class Transformers():
+    """This class models the eletric component of eletric power systems know as transformer.
+    """
     instances = []
-    counter = 0
-    def __init__(self, power, voltage_h, voltage_l, impedance, terminals) -> None:
+    def __init__(self, impedance, terminals, power=None, voltage_h=None, voltage_l=None) -> None:
+        """Constructor method.
+
+        :param impedance: A transformer is modeled as having a series impedance. This parameter specifies the impedance chacteristics.
+        :type impedance: dict {'nominal': Impedance(), 'base': None, 'pu': None}.
+        :param terminals: A transformer has a pair of terminals for this representation. This parameter specifies them.
+        :type terminals: tuple.
+        :param power: A transformer has a nominal power, when is of interest this parameter specifies that, defaults to None.
+        :type power: Power(), optional.
+        :param voltage_h: A transformer has a high voltage side, when is of interest this parameter specifies that voltage value, defaults to None.
+        :type voltage_h: dict {'nominal': Voltage(), 'base': None, 'pu': None}, optional.
+        :param voltage_l: A transformer has a low voltage side, when is of interest this parameter specifies that voltage value, defaults to None.
+        :type voltage_l: dict {'nominal': Voltage(), 'base': None, 'pu': None}, optional.
+        """
         Transformers.instances.append(self)
-        Transformers.counter += 1
-        self.id = Transformers.counter
+        self.id = len(Transformers.instances)
         self.power = power
         self.voltage_h = voltage_h
         self.voltage_l = voltage_l
@@ -154,126 +241,188 @@ class Transformers():
         self.terminals = terminals
     
     def set_voltage(self, key, voltage):
+        """This method sets the voltage of the transformer. Since the voltage is a dict this method receives the key and the value to attribute.
+
+        :param key: Dict key for the voltage attribute.
+        :type key: str.
+        :param voltage: Value representing a type of voltage.
+        :type voltage: Voltage() or float.
+        """
         self.voltage[key] = voltage
 
     def set_impedance(self, key, impedance):
+        """This method sets the impedance of the transformer. Since the impedance is a dict this method receives the key and the value to attribute.
+
+        :param key: Dict key for the impedance attribute.
+        :type key: str.
+        :param voltage: Value representing a type of impedance.
+        :type voltage: Impedance() or float.
+        """
         self.impedance[key] = impedance
-
-# pt1, tt1 = Power(50, 'M', 'VA'), (1, 2)
-# vht1 = d.get_dict_struct(Voltage(125, 'k', 'V', 2))
-# vlt1 = d.get_dict_struct(Voltage(13.8, 'k', 'V', 1))
-# zput1 = d.get_dict_struct(Impedance(10, '%', 'pu', 'series'))
-# t1 = Transformers(pt1, vht1, vlt1, zput1, tt1)
-
-# print(f"Transformer object: {t1}")
-# print(f"Transformer power: {t1.power}")
-# print(f"Transformer power: {t1.power.mag}{t1.power.multiplier}{t1.power.measurement_unit}")
-# print(f"Transformer high voltage: {t1.voltage_h}")
-# print(f"Transformer high nominal voltage: {t1.voltage_h['nominal'].mag}{t1.voltage_h['nominal'].multiplier}{t1.voltage_h['nominal'].measurement_unit} in bar {t1.voltage_h['nominal'].bar}")
-# print(f"Transformer low voltage: {t1.voltage_l}")
-# print(f"Transformer low nominal voltage: {t1.voltage_l['nominal'].mag}{t1.voltage_l['nominal'].multiplier}{t1.voltage_l['nominal'].measurement_unit} in bar {t1.voltage_l['nominal'].bar}")
-# print(f"Transformer impedance: {t1.impedance}")
-# print(f"Transformer nominal impedance: {t1.impedance['nominal'].mag}{t1.impedance['nominal'].multiplier}{t1.impedance['nominal'].measurement_unit} type {t1.impedance['nominal'].characteristic}")
 
 
 class ShortTLines():
+    """This class models the eletric component of eletric power systems know as short transmission line.
+    """
     instances = []
-    counter = 0
     def __init__(self, series_impedance, terminals) -> None:
+        """Constructor method.
+
+        :param series_impedance: A short transmission line is modeled as having a series impedance. This parameter specifies the impedance chacteristics.
+        :type series_impedance: dict {'nominal': Impedance(), 'base': None, 'pu': None}.
+        :param terminals:  A short transmission line has a pair of terminals for this representation. This parameter specifies them.
+        :type terminals: tuple.
+        """
         ShortTLines.instances.append(self)
-        ShortTLines.counter += 1
-        self.id = ShortTLines.counter
+        self.id = len(ShortTLines.instances)
         self.z_series = series_impedance
         self.terminals = terminals
     
     def set_series_impedance(self, key, impedance):
+        """This method sets the series impedance of the short transmission line. Since the impedance is a dict this method receives the key and the value to attribute.
+
+        :param key: Dict key for the impedance attribute.
+        :type key: str.
+        :param voltage: Value representing a type of impedance.
+        :type voltage: Impedance() or float.
+        """
         self.z_series[key] = impedance
-
-# zl1, tl1 = d.get_dict_struct(Impedance(100j, ' ', 'ohm', 'series')), (2, 3)
-# l1 = ShortTLines(zl1, tl1)
-
-# print(f"Short Line nominal impedance: {l1.z_series['nominal'].mag}{l1.z_series['nominal'].multiplier}{l1.z_series['nominal'].measurement_unit} type {l1.z_series['nominal'].characteristic}")
 
 
 class MediumTLines():
+    """This class models the eletric component of eletric power systems know as medium transmission line.
+    """
     instances = []
-    counter = 0
     def __init__(self, series_impedance, shunt_impedance, terminals) -> None:
+        """Constructor method.
+
+        :param series_impedance: A medium transmission line is modeled as having a series impedance. This parameter specifies the impedance chacteristics.
+        :type series_impedance: dict {'nominal': Impedance(), 'base': None, 'pu': None}.
+        :param shunt_impedance: A medium transmission line is modeled as having a shunt impedance. This parameter specifies the impedance chacteristics.
+        :type shunt_impedance: dict {'nominal': Impedance(), 'base': None, 'pu': None}.
+        :param terminals:  A medium transmission line has a pair of terminals for this representation. This parameter specifies them.
+        :type terminals: tuple.
+        """
         MediumTLines.instances.append(self)
-        MediumTLines.counter += 1
-        self.id = MediumTLines.counter
+        self.id = len(MediumTLines.instances)
         self.z_series = series_impedance
         self.z_shunt = shunt_impedance
         self.z_shunt_per_side = cp.deepcopy(shunt_impedance)
         self.terminals = terminals
-        self.initialize_shunt_impedance_per_side()
+        self.correct_shunt_impedance_per_side()
     
-    def initialize_shunt_impedance_per_side(self):
+    def correct_shunt_impedance_per_side(self):
+        """This method corrects the value of shunt impedance per side.
+        """
         self.z_shunt_per_side['nominal'].mag = 2 * self.z_shunt['nominal'].mag
         
     def set_shunt_impedance_per_side(self, key, impedance):
+        """This method sets the shunt impedance per side of the medium transmission line. Since the impedance is a dict this method receives the key and the value to attribute.
+
+        :param key: Dict key for the impedance attribute.
+        :type key: str.
+        :param voltage: Value representing a type of impedance.
+        :type voltage: Impedance() or float.
+        """
         self.z_shunt_per_side[key] = impedance
 
     def set_series_impedance(self, key, impedance):
+        """This method sets the series impedance of the medium transmission line. Since the impedance is a dict this method receives the key and the value to attribute.
+
+        :param key: Dict key for the impedance attribute.
+        :type key: str.
+        :param voltage: Value representing a type of impedance.
+        :type voltage: Impedance() or float.
+        """
         self.z_series[key] = impedance
     
     def set_shunt_impedance(self, key, impedance):
+        """This method sets the shunt impedance of the medium transmission line. Since the impedance is a dict this method receives the key and the value to attribute.
+
+        :param key: Dict key for the impedance attribute.
+        :type key: str.
+        :param voltage: Value representing a type of impedance.
+        :type voltage: Impedance() or float.
+        """
         self.z_shunt[key] = impedance
-
-# zsml1, tml1 = d.get_dict_struct(Impedance(100j, ' ', 'ohm', 'series')), (2, 3)
-# zshml1 = d.get_dict_struct(Impedance(-5000j, ' ', 'ohm', 'shunt'))
-# l1 = MediumTLines(zsml1, zshml1, tml1)
-
-# print(f"Medium Line series nominal impedance: {l1.z_series['nominal'].mag}{l1.z_series['nominal'].multiplier}{l1.z_series['nominal'].measurement_unit} type {l1.z_series['nominal'].characteristic}")
-# print(f"Medium Line shunt nominal impedance: {l1.z_shunt['nominal'].mag}{l1.z_shunt['nominal'].multiplier}{l1.z_shunt['nominal'].measurement_unit} type {l1.z_shunt['nominal'].characteristic}")
 
 
 class PowerFactor():
+    """This class models the eletric characteristic of eletric power know as power factor.
+    """
     def __init__(self, pf, characteristic) -> None:
+        """Constructor method.
+
+        :param pf: Power factor value ranging between ]0, 1].
+        :type pf: float.
+        :param characteristic: _description_
+        :type characteristic: _type_
+        """
         self.pf = pf
         self.characteristic = characteristic
 
 class Loads():
+    """This class models the eletric component of eletric power systems know as load.
+    """
     instances = []
-    
-    counter = 0
-    def __init__(self, power, power_factor, terminals, impedance = None) -> None:
+    def __init__(self, terminals, power=None, power_factor=None, impedance = None) -> None:
+        """Constructor method.
+
+        :param terminals: A load has a pair of terminals for this representation. This parameter specifies them.
+        :type terminals: tuple.
+        :param power: A load can be specified by it's power and power factor, this parameter specifies it's power, defaults to None.
+        :type power: dict {'nominal': Power(), 'base': None, 'pu': None}, optional.
+        :param power_factor: A load can be specified by it's power and power factor, this parameter specifies it's power factor, defaults to None.
+        :type power_factor: PowerFactor(), optional.
+        :param impedance: A load can be specified by it's impedance, this parameter specifies that, defaults to None.
+        :type impedance: dict {'nominal': Impedance(), 'base': None, 'pu': None}, optional.
+        """
         Loads.instances.append(self)
-        Loads.counter += 1
-        self.id = Loads.counter
+        self.id = len(Loads.instances)
         self.power = power
         self.pf = power_factor
         self.terminals = terminals
         self.impedance = impedance
-        
-    def set_impedance(self, impedance):
-        self.impedance = impedance
-# pld1, pfld1, tld1 = Power(35, 'M', 'VA'), PowerFactor(0.98, 'atrasado'), (1, 2)
-# ld1 = Loads(pld1, pfld1, tld1)
-
-# print(f"Load object: {ld1}")
-# print(f"Load power: {ld1.power}")
-# print(f"Load power: {ld1.power.mag}{ld1.power.multiplier}{ld1.power.measurement_unit} with a power factor of {ld1.pf.pf} {ld1.pf.characteristic}")
-
 
 
 class Bars():
+    """This class models the eletric element of eletric power systems know as bar.
+    """
     def __init__(self) -> None:
+        """Constructor method.
+        """
         self.id = None
         self.adjacent = []
         self.isVisited = False
         self.voltage = None
 
     def set_id(self, id) -> None:
+        """This method sets the instance attribute id with given parameter.
+
+        :param id: Identifier for the bar.
+        :type id: int.
+        """
         self.id = id
 
     def get_bars(self, components) -> List:
+        """This method returns a list to be iterated over when instatiating the bars.
+
+        :param components: A list of the given eletric components .
+        :type components: [Generators(), Transformers(), ShortTLines(), MediumTLines(), Loads()] or any combination of these objects.
+        :return: A list of integers from 0 up to the higher terminal.
+        :rtype: List.
+        """
         t_list = [terminals for component in components for terminals in component.terminals]
         max_terminal = sorted(t_list)[-1]
-        t_list = [i for i in range(max_terminal + 1)]
-        return t_list
+        bar_list = [i for i in range(max_terminal + 1)]
+        return bar_list
 
     def set_adjacent(self, components) -> None:
+        """This method sets a list of adjacent bars to each bar.
+
+        :param components: A list of the given eletric components .
+        :type components: [Generators(), Transformers(), ShortTLines(), MediumTLines(), Loads()] or any combination of these objects.
+        """
         for component in components:
             if self.id in component.terminals:
                 if self.id != component.terminals[0]:
@@ -282,9 +431,19 @@ class Bars():
                      self.adjacent.append(component.terminals[1])
 
     def set_isVisited(self, isVisited) -> None:
+        """This method sets the isVisited attribute of the caller instance to true.
+
+        :param isVisited: This parameter is used as part of algorithm to go through all the bars.
+        :type isVisited: bool
+        """
         self.isVisited = isVisited
     
     def set_voltage(self, voltage) -> None:
+        """This method sets the bar voltage attribute.
+
+        :param voltage: 
+        :type voltage: _type_
+        """
         self.voltage = MagConversion().get_value(voltage)
     # components = lista dos objetos componentes = [gerador, transformador 1, linha 1, transformador 2]
     # bars = lista dos objetos barra = [barra 0, barra 1, barra 2, barra 3, barra 4]
@@ -503,112 +662,84 @@ class PuConvesions():
             print(pdict)
 
 
-class LoadConvertions():
-    @staticmethod
-    def power_to_impedance(loads, bars, voltage=None):
-        for load in loads:
-            d = DefaultDictFormat()
-            # .get_dict_struct()
-            mc = MagConversion()
-            power = None
-            load_impedance = None
-            conj = None
-            if load.power['nominal'].measurement_unit == 'VA':
-                for bar in bars:
-                    if bar.id in load.terminals and bar.id != 0:
-                        voltage_load = bar.voltage
-                        if load.pf.characteristic == 'atrasado':
-                            power = cm.polar(cm.rect(mc.get_value(load.power), m.acos(load.pf.pf)))
-                        elif load.pf.characteristic == 'adiantado':
-                            power = cm.polar(cm.rect(mc.get_value(load.power), -m.acos(load.pf.pf)))
-                        conj = cm.rect(power[0], power[1]).conjugate()
-                        load_impedance = pow(voltage_load, 2) / conj
-                        load.set_impedance(d.get_dict_struct(Impedance(load_impedance, ' ', 'ohm', 'series')))
-                print(f"Load impedance:")
-                print(f"{load.impedance}")
-                print(f"{load.impedance['nominal'].mag}{load.impedance['nominal'].multiplier}{load.impedance['nominal'].measurement_unit} type {load.impedance['nominal'].characteristic}")
-            # elif load.power['nominal'].measurement_unit == 'W':
-            #     break
+def main():
+    # DefaultDictFormat()
+    d = DefaultDictFormat()
+    # System basis
+    base_values = [
+        Power(100, 'M', 'VA'),
+        Voltage(13.8, 'k', 'V', 1)
+    ]
+    # Generators
+    pg1, tg1 = Power(60, 'M', 'VA'), (0, 1)
+    vg1 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 1))
+    zpug1 = d.get_dict_struct(Impedance(30, '%', 'pu', 'series'))
+    g1 = Generators(zpug1, tg1, pg1, vg1)
+
+    # Transformers
+    pt1, tt1 = Power(50, 'M', 'VA'), (1, 2) 
+    vht1 = d.get_dict_struct(Voltage(132, 'k', 'V', 2))
+    vlt1 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 1))
+    zput1 = d.get_dict_struct(Impedance(5, '%', 'pu', 'series'))
+    t1 = Transformers(zput1, tt1, pt1, vht1, vlt1)
+    pt2, tt2 = Power(50, 'M', 'VA'), (3, 4)
+    vht2 = d.get_dict_struct(Voltage(135, 'k', 'V', 3))
+    vlt2 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 4))
+    zput2 = d.get_dict_struct(Impedance(6, '%', 'pu', 'series'))
+    t2 = Transformers(zput2, tt2, pt2, vht2, vlt2)
+
+    # Medium Lines
+    zsl1 = d.get_dict_struct(Impedance(0.4j, ' ', 'ohm/km', 'series', 97))
+    zshl = d.get_dict_struct(Impedance(280j, ' ', 'kohm*km', 'shunt', 97))
+    tl1 = (2, 3)
+    l1 = MediumTLines(zsl1, zshl, tl1)
+    zsl2 = d.get_dict_struct(Impedance(1.05 + 0.4j, ' ', 'ohm/km', 'series', 150)) 
+    zshl2 = d.get_dict_struct(Impedance(280j, ' ', 'kohm*km', 'shunt', 150)) 
+    tl2 = (1, 5)
+    l2 = MediumTLines(zsl2, zshl2, tl2)
+
+    # Loads
+    pld1 = d.get_dict_struct(Power(35, 'M', 'VA'), base_values[0])
+    pfld1, tld1 = PowerFactor(0.98, 'adiantado'), (4, 0)
+    ld1 = Loads(tld1, pld1, pfld1)
+    pld2 = d.get_dict_struct(Power(2, 'M', 'W'), base_values[0])
+    pfld2, tld2 = PowerFactor(0.85, 'atrasado'), (5, 0)
+    ld2 = Loads(tld2, pld2, pfld2)
 
 
-# DefaultDictFormat()
-d = DefaultDictFormat()
-# System basis
-base_values = [
-    Power(100, 'M', 'VA'),
-    Voltage(13.8, 'k', 'V', 1)
-]
-# Generators
-pg1, tg1 = Power(60, 'M', 'VA'), (0, 1)
-vg1 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 1))
-zpug1 = d.get_dict_struct(Impedance(30, '%', 'pu', 'series'))
-g1 = Generators(pg1, vg1, zpug1, tg1)
+    component_classes = [Generators, Transformers, ShortTLines, MediumTLines, Loads]
+    components = []
+    for component_class in component_classes:
+            # print(f"{str(component_class)[17:-2]}")
+            for instance in component_class.instances:
+                # print(f"{instance.id} : {instance}")
+                components.append(instance)
 
-# Transformers
-pt1, tt1 = Power(50, 'M', 'VA'), (1, 2) 
-vht1 = d.get_dict_struct(Voltage(132, 'k', 'V', 2))
-vlt1 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 1))
-zput1 = d.get_dict_struct(Impedance(5, '%', 'pu', 'series'))
-t1 = Transformers(pt1, vht1, vlt1, zput1, tt1)
-pt2, tt2 = Power(50, 'M', 'VA'), (3, 4)
-vht2 = d.get_dict_struct(Voltage(135, 'k', 'V', 3))
-vlt2 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 4))
-zput2 = d.get_dict_struct(Impedance(6, '%', 'pu', 'series'))
-t2 = Transformers(pt2, vht2, vlt2, zput2, tt2)
+    # for component in components: print(f"{component}")
+    # Instantiating bars
+    bars = [Bars() for i in Bars().get_bars(components)]
+    print(bars)
+    # Setting bars Id's
+    for i in range(len(bars)): bars[i].set_id(i)
+    # Setting adjacent bars
+    for bar in bars: bar.set_adjacent(components)
+    # Defining groung and head bar
+    ground_bar = bars[0]
+    ground_bar.set_voltage(Voltage(0, 'k', 'V', 0))
+    head = bars[base_values[1].bar]
+    bars[head.id].set_voltage(base_values[1])
+    # Calculating base voltages
+    head.set_voltages(components, bars)
+    for bar in bars: print(f'Vb{bar.id}: {bar.voltage} V')
 
-# Medium Lines
-zsl1 = d.get_dict_struct(Impedance(0.4j, ' ', 'ohm/km', 'series', 97))
-zshl = d.get_dict_struct(Impedance(280j, ' ', 'kohm*km', 'shunt', 97))
-tl1 = (2, 3)
-l1 = MediumTLines(zsl1, zshl, tl1)
-zsl2 = d.get_dict_struct(Impedance(1.05 + 0.4j, ' ', 'ohm/km', 'series', 150)) 
-zshl2 = d.get_dict_struct(Impedance(280j, ' ', 'kohm*km', 'shunt', 150)) 
-tl2 = (1, 5)
-l2 = MediumTLines(zsl2, zshl2, tl2)
+    # Pu Conversion
+    conv = PuConvesions(MagConversion().get_value(base_values[0]))
 
-# Loads
-pld1 = d.get_dict_struct(Power(35, 'M', 'VA'), base_values[0])
-pfld1, tld1 = PowerFactor(0.98, 'adiantado'), (4, 0)
-ld1 = Loads(pld1, pfld1, tld1)
-pld2 = d.get_dict_struct(Power(2, 'M', 'W'), base_values[0])
-pfld2, tld2 = PowerFactor(0.85, 'atrasado'), (5, 0)
-ld2 = Loads(pld2, pfld2, tld2)
+    conv.generator_to_pu(bars, components)
+    conv.transformer_to_pu(bars, components)
+    conv.tlines_to_pu(bars, components)
+    conv.loads_to_pu(bars, components)
 
 
-component_classes = [Generators, Transformers, ShortTLines, MediumTLines, Loads]
-components = []
-for component_class in component_classes:
-        # print(f"{str(component_class)[17:-2]}")
-        for instance in component_class.instances:
-            # print(f"{instance.id} : {instance}")
-            components.append(instance)
-
-# for component in components: print(f"{component}")
-# Instantiating bars
-bars = [Bars() for i in Bars().get_bars(components)]
-# Setting bars Id's
-for i in range(len(bars)): bars[i].set_id(i)
-# Setting adjacent bars
-for bar in bars: bar.set_adjacent(components)
-# Defining groung and head bar
-ground_bar = bars[0]
-ground_bar.set_voltage(Voltage(0, 'k', 'V', 0))
-head = bars[base_values[1].bar]
-bars[head.id].set_voltage(base_values[1])
-# Calculating base voltages
-head.set_voltages(components, bars)
-for bar in bars: print(f'Vb{bar.id}: {bar.voltage} V')
-
-# Pu Conversion
-conv = PuConvesions(MagConversion().get_value(base_values[0]))
-
-conv.generator_to_pu(bars, components)
-conv.transformer_to_pu(bars, components)
-conv.tlines_to_pu(bars, components)
-conv.loads_to_pu(bars, components)
-
-# Load Conversion
-# loads = [load for load in components if isinstance(load, Loads)]
-# ldconv = LoadConvertions()
-# ldconv.power_to_impedance(loads, bars)
-
+if __name__ == "__main__":
+    main()

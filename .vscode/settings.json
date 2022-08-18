@@ -2,5 +2,9 @@
     "python.defaultInterpreterPath": "D:\\Estudos\\TCC\\HEFESTO\\venv\\Scripts\\python",
     "code-runner.executorMap": {
         "python": "D:\\Estudos\\TCC\\HEFESTO\\venv\\Scripts\\python",
-    }
+    },
+    "autoDocstring.docstringFormat": "sphinx",
+    "autoDocstring.generateDocstringOnEnter": true,
+    "autoDocstring.includeExtendedSummary": true,
+    "autoDocstring.guessTypes": true
 }
