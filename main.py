@@ -1,3 +1,8 @@
+""" This module is responsible for getting user input and determine system pu equivalent
+
+:return: Default return of python script.
+:rtype: None
+"""
 from typing import List
 # import numpy as np
 # import cmath as cm
@@ -443,40 +448,29 @@ class Bars():
     def set_voltage(self, voltage) -> None:
         """This method sets the bar voltage attribute.
 
-        :param voltage: 
-        :type voltage: _type_
+        :param voltage: Voltage value to be set. 
+        :type voltage: float
         """
         self.voltage = MagConversion().get_value(voltage)
-    # components = lista dos objetos componentes = [gerador, transformador 1, linha 1, transformador 2]
-    # bars = lista dos objetos barra = [barra 0, barra 1, barra 2, barra 3, barra 4]
+
     def set_voltages(self, components, bars) -> None:
-        # 1ª CHAMADA set_voltages(): aux = head = barra 1
-        # 2ª CHAMADA set_voltages(): aux = barra 2
-        # 3ª CHAMADA set_voltages(): 
+        """This method works recursively in order to visit all bars and set their base voltage.
+
+        :param components: A list of the given eletric components .
+        :type components: [Generators(), Transformers(), ShortTLines(), MediumTLines(), Loads()] or any combination of these objects.
+        :param bars: A list with all the instances of Bars().
+        :type bars: [Bar(1st instance), Bars(2nd instance), ...].
+        :return: Since this is a recursive method it returns itself ultil reaches a base case.
+        :rtype: itself
+        """
         aux = self 
-        while(aux != None): # Roda infinito
-            # 1ª CHAMADA set_voltages(): seta head como visitado
-            # 2ª CHAMADA set_voltages(): seta barra 2 como visitado
-            # 3ª CHAMADA set_voltages(): 
+        while(aux != None):
             aux.isVisited = True
-            # 1ª CHAMADA set_voltages(): Para as barras 0 e 2
-            # 2ª CHAMADA set_voltages(): Para as barras 1 e 3
-            # 3ª CHAMADA set_voltages(): 
             for adjacent in aux.adjacent:
                 if adjacent != 0: # Não fazer nada para barra 0; 
-                    # 1ª CHAMADA set_voltages(): Se a tensão na head for None > False
-                    # 2ª CHAMADA set_voltages(): Se a tensão na barra 3 for None > True
-                    # 3ª CHAMADA set_voltages(): 
                     if aux.voltage == None:
-                        # 1ª CHAMADA set_voltages(): Não entra aqui
-                        # 2ª CHAMADA set_voltages(): Calcula tensão na barra 3
-                        # 3ª CHAMADA set_voltages(): 
                         aux.voltage = aux.calcVoltage(components, bars)
-                    # 1ª CHAMADA set_voltages(): Barra 2 não visitada > True
-                    # 2ª CHAMADA set_voltages(): 
                     if not bars[adjacent].isVisited:
-                        # 1ª CHAMADA set_voltages(): Chama o próprio método partir da instância da barra 2; começo da 2ª CHAMADA
-                        # 2ª CHAMADA set_voltages(): 
                         return bars[adjacent].set_voltages(components, bars)
             # Verifying process end
             visited = [bar.isVisited for bar in bars if bar.id != 0]
@@ -489,30 +483,27 @@ class Bars():
                 break
             
     def calcVoltage(self, components, bars):
-        # 2ª CHAMADA set_voltages(): atribui a barra em análise à variável current_bar para legibilidade
-        # 3ª CHAMADA set_voltages(): IDEM
+        """This method returns the calculation of the bar voltage given the first known voltage connected to the bar.
+
+        :param components: A list of the given eletric components .
+        :type components: [Generators(), Transformers(), ShortTLines(), MediumTLines(), Loads()] or any combination of these objects.
+        :param bars: A list with all the instances of Bars().
+        :type bars: [Bar(1st instance), Bars(2nd instance), ...].
+        :return: A float representing the bar base voltage.
+        :rtype: float.
+        """
         current_bar = self
-        # 2ª CHAMADA set_voltages(): self = barra 2; self.findFirstKnowVoltageBar(bars) retornará a barra 1: HEAD
-        # 3ª CHAMADA set_voltages(): 
         knowVoltageBar = current_bar.findFirstKnowVoltageBar(bars)
-        # 2ª CHAMADA set_voltages(): (2, 1) = (Id barra 2, Id barra 1)
-        # 3ª CHAMADA set_voltages(): (3, 2) = 
         terminals = (current_bar.id, knowVoltageBar.id)
         selected_component = None
-        # 2ª CHAMADA set_voltages(): Busca dentro dos componentes aquele cujos terminais coincidem com os da análise
-        # 3ª CHAMADA set_voltages(): IDEM
         for component in components:
             if terminals[0] in component.terminals and terminals[1] in component.terminals:
                 selected_component = component
                 break
         if isinstance(selected_component, Transformers):
             transformer = selected_component
-            # 2ª CHAMADA set_voltages(): criam-se as tuplas (tensão, Id da barra) para fins de cálculo e legibilidade
-            # 3ª CHAMADA set_voltages(): IDEM
             voltage_h = (MagConversion().get_value(transformer.voltage_h), transformer.voltage_h['nominal'].bar)
             voltage_l = (MagConversion().get_value(transformer.voltage_l), transformer.voltage_l['nominal'].bar)
-            # 2ª CHAMADA set_voltages(): Cálculo da tensão na barra 2
-            # 3ª CHAMADA set_voltages(): Cálculo da tensão na barra 3
             transf_relation = voltage_h[0] / voltage_l[0]
             if current_bar.id == voltage_h[1]:
                 current_bar.voltage = knowVoltageBar.voltage * transf_relation
@@ -520,45 +511,68 @@ class Bars():
                 current_bar.voltage = knowVoltageBar.voltage / transf_relation
         elif isinstance(selected_component, ShortTLines) or isinstance(selected_component, MediumTLines):
             current_bar.voltage = knowVoltageBar.voltage
-        # 2ª CHAMADA set_voltages(): retorna tensão na barra 2
-        # 3ª CHAMADA set_voltages(): retorna tensão na barra 3
         return current_bar.voltage
 
     def findFirstKnowVoltageBar(self, bars):
+        """This method returns the first known voltage of a adjacent bar of the current bar.
+
+        :param bars: A list with all the instances of Bars().
+        :type bars: [Bar(1st instance), Bars(2nd instance), ...].
+        :return: Returns the voltage of the first adjacente bar with a known voltage.
+        :rtype: float.
+        """
         for adjacent in self.adjacent:
-            if bars[adjacent].id != 0 and bars[adjacent].voltage != None: # Não fazer nada para barra 0; 
+            if bars[adjacent].id != 0 and bars[adjacent].voltage != None:
                 return bars[adjacent]
 
 
 class PuConvesions():
+    """This class is responsable for converting all power system inputed components to pu.
+    """
     def __init__(self, base_power) -> None:
+        """Constructor method.
+
+        :param base_power: The inputed power base of the system in float format.
+        :type base_power: float.
+        """
         self.base_p = base_power
 
     def generator_to_pu(self, bars, components):
-        # Grab generators and put them on a list
+        """This method converts the generator nominal voltage and impedance to pu.
+
+        :param bars: A list with all the instances of Bars().
+        :type bars: [Bar(1st instance), Bars(2nd instance), ...].
+        :param components: A list of the given eletric components .
+        :type components: [Generators(), Transformers(), ShortTLines(), MediumTLines(), Loads()] or any combination of these objects.
+        """
         generators = [component for component in components if isinstance(component, Generators)]
         mc = MagConversion()
         for gen in generators: 
             gen_npower = mc.get_value(gen.power)
             for bar in bars:
                 if bar.id == gen.terminals[1] and bar.id != 0:
+                    # Converting voltage to pu
                     gen_nvoltage = mc.get_value(gen.voltage['nominal'])
                     gen.set_voltage('base', bar.voltage)
                     gen.set_voltage('pu', gen_nvoltage / bar.voltage)
-
+                    # Converting impedance to pu
                     gen_nimpedance = mc.get_value(gen.impedance['nominal'])
                     gen.set_impedance('base', pow(gen_nvoltage, 2) / gen_npower)
                     gen.set_impedance('pu', gen_nimpedance * gen.impedance['base'] * self.base_p / pow(bar.voltage, 2))
-            Print.print_default_dict(gen)
+            Print.print_components(gen)
 
     def transformer_to_pu(self, bars, components):
-        # Grab transformers and put them on a list
+        """This method converts the transformer nominal impedance to pu.
+
+        :param bars: A list with all the instances of Bars().
+        :type bars: [Bar(1st instance), Bars(2nd instance), ...].
+        :param components: A list of the given eletric components .
+        :type components: [Generators(), Transformers(), ShortTLines(), MediumTLines(), Loads()] or any combination of these objects.
+        """
         transformers = [component for component in components if isinstance(component, Transformers)]
         mc = MagConversion()
         for tran in transformers: 
-            # Grab transformer power in type float
             tran_npower = mc.get_value(tran.power)
-            pdict = ''
             for bar in bars:
                 # Match current trasformer terminal with bar
                 if bar.id == tran.terminals[0]:
@@ -570,11 +584,17 @@ class PuConvesions():
                     tran_nimpedance = mc.get_value(tran.impedance['nominal'])
                     tran.set_impedance('base', pow(tran_nv, 2) / tran_npower)
                     tran.set_impedance('pu', tran_nimpedance * tran.impedance['base'] * self.base_p / pow(bar.voltage, 2))
-            Print.print_default_dict(tran)
+            Print.print_components(tran)
             
     def tlines_to_pu(self, bars, components):
+        """This method converts the transmission lines nominal impedance to pu.
+
+        :param bars: A list with all the instances of Bars().
+        :type bars: [Bar(1st instance), Bars(2nd instance), ...].
+        :param components: A list of the given eletric components .
+        :type components: [Generators(), Transformers(), ShortTLines(), MediumTLines(), Loads()] or any combination of these objects.
+        """
         tlines = [component for component in components if isinstance(component, ShortTLines) or isinstance(component, MediumTLines)]
-        mc = MagConversion()
         for line in tlines:
             for bar in bars:
                 if bar.id in line.terminals:
@@ -588,13 +608,19 @@ class PuConvesions():
                         line.set_shunt_impedance_per_side('base', line.series_impedance['base'])
                         line.set_shunt_impedance_per_side('pu', line_shunt_impedance_per_side / line.series_impedance['base'])
                     line.set_series_impedance('pu', line_series_impedance / line.series_impedance['base'])
-            Print.print_default_dict(line)
+            Print.print_components(line)
 
 
     def loads_to_pu(self, bars, components):
+        """This method converts the loads nominal power to pu.
+
+        :param bars: A list with all the instances of Bars().
+        :type bars: [Bar(1st instance), Bars(2nd instance), ...].
+        :param components: A list of the given eletric components .
+        :type components: [Generators(), Transformers(), ShortTLines(), MediumTLines(), Loads()] or any combination of these objects.
+        """
         loads = [component for component in components if isinstance(component, Loads)]
         mc = MagConversion()
-        base_voltage = None
         for load in loads:
             load_base_power = mc.get_value(load.power['base'])
             if load.power['nominal'].measurement_unit == 'VA':
@@ -604,13 +630,20 @@ class PuConvesions():
                 load_active_power = mc.get_value(load.power['nominal'])
                 load.power['pu'] = load_active_power / load_base_power
             load_base_power = mc.get_value(load.power['base'])
-            Print.print_default_dict(load)
+            Print.print_components(load)
             
 
 
 class Print():
+    """This class hosts the print methods.
+    """
     @staticmethod
-    def print_default_dict(instance):
+    def print_components(instance):
+        """this stactic method prints all pertinent information about a given power system component
+
+        :param instance: A power system component such as any instance of the following classes: Generators(), Transformers(), ShortTLines(), MediumTLines() or Loads().
+        :type instance: Generators(), Transformers(), ShortTLines(), MediumTLines() or Loads().
+        """
         mc = MagConversion()
         print(f"{str(instance)[10:-30]}[{instance.id}]")
         for attr, value in instance.__dict__.items():
@@ -626,6 +659,8 @@ class Print():
 
 
 def main():
+    """The main functions execute the method calls in order to get the script output.
+    """
     # DefaultDictFormat()
     d = DefaultDictFormat()
     # System basis
@@ -678,7 +713,6 @@ def main():
                 # print(f"{instance.id} : {instance}")
                 components.append(instance)
 
-    # for component in components: print(f"{component}")
     # Instantiating bars
     bars = [Bars() for i in Bars().get_bars(components)]
     # Setting bars Id's
@@ -704,4 +738,6 @@ def main():
 
 
 if __name__ == "__main__":
+    """This condition makes so that the main function of this module can only be executed when run by this script.
+    """
     main()
