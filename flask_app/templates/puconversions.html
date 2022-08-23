@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>This is Pu Convertions page</h1>
+    {% for input in pu_conversion_template_input %}
+        <h2>{{ input.description }}</h2>
+        {% for key, value in input.items() %}
+            {% if key != 'description' %}     
+                <p>{{ key }} = {{ value }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% endblock content %}
