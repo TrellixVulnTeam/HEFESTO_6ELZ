@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', 
-                            validators=[DataRequired(), Length(min=8, max=20)])
+    username = StringField('Nome', 
+                            validators=[InputRequired('saduajbda'), Length(min=8, max=20, message='asdsafdsfd')])
     email = StringField('E-mail', 
                         validators=[DataRequired(), Email()])
     password = PasswordField('Senha', 
@@ -21,8 +21,4 @@ class LogInForm(FlaskForm):
     password = PasswordField('Senha', 
                             validators=[DataRequired(), Length(min=8)])
     remember = BooleanField('Lembrar-me')
-    submit = SubmitField('Entrar')
-
-
-class PuConversionForm(FlaskForm):
-    
+    submit = SubmitField('Iniciar Sessão')
