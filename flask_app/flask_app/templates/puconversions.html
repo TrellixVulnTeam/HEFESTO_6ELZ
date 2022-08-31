@@ -1,334 +1,358 @@
-{% extends "layout_sidebar.html" %}
+{% extends "layout.html" %}
 {% block content %}
-    <div class="container">
-        <div class="col">
-            <div class="row">
-                <button class="btn btn-primary bg-steel border-5 border-dark w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
-                    Adicionar Gerador
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                    </svg>
-                </button>
-                <div class="collapse" id="collapse1">
-                    <div class="card card-body">
-                        <form method="POST" action="" class="px-3">
-                            {{ form.hidden_tag() }}
-                            <fieldset>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Potência</span>
-                                    <input type="text" aria-label="Potencia" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">M</option>
-                                        <option value="2">k</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">VA</option>
-                                        <option value="2">pu</option>
-                                        <option value="3">W</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Tensão</span>
-                                    <input type="text" aria-label="Tensão" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">k</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">V</option>
-                                        <option value="2">pu</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Impedância</span>
-                                    <input type="text" aria-label="Impedância" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">%</option>
-                                        <option value="2">m</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">Ohm</option>
-                                        <option value="2">pu</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Terminais</span>
-                                    <input type="text" aria-label="Terminal1" class="form-control">
-                                    <input type="text" aria-label="Terminal2" class="form-control">
-                                </div>
-                            </fieldset> 
-                            <button type="button" class="container-fluid btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
+    <div class="container col-md-8 content-section mb-2 py-3 px-4">
+        <div class="container p-0">
+            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                Adicionar Gerador
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+            </button>
+            <div class="collapse" id="collapse1">
+                <div class="card card-body">
+                    <form method="POST" action="" class="px-3">
+                        {{ form.hidden_tag() }}
+                        <fieldset>
+                            <div class="container input-group p-0">
+                                
+                                <span class="input-group-text w-25">Potência</span>
+
+                                {% if form.power_mag.errors %}
+                                    {{ form.power_mag(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in form.power_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.power_mag(class="form-control") }}
+                                    {{ form.power_mult(class="form-control form-select") }}
+                                    {{ form.power_measure(class="form-control form-select") }}
+                                {% endif %}
+                                
+                                
+                                
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Tensão</span>
+                                <input type="text" aria-label="Tensão" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">k</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">V</option>
+                                    <option value="2">pu</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Impedância</span>
+                                <input type="text" aria-label="Impedância" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">%</option>
+                                    <option value="2">m</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">Ohm</option>
+                                    <option value="2">pu</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Terminais</span>
+                                <input type="text" aria-label="Terminal1" class="form-control">
+                                <input type="text" aria-label="Terminal2" class="form-control">
+                            </div>
+                        </fieldset> 
+                        {{ form.submit(class="btn btn-primary mb-3 w-100") }}
+                        <!-- <button type="button" name="submit_gen" class="container-fluid btn btn-secondary" value='submit'>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                            </svg>
+                        </button> -->
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="row">
-                <button class="btn btn-primary bg-steel border-5 border-dark w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
-                    Adicionar Transformador
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                    </svg>
-                </button>
-                <div class="collapse" id="collapse2">
-                    <div class="card card-body">
-                        <form method="POST" action="" class="px-3">
-                            {{ form.hidden_tag() }}
-                            <fieldset>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Potência</span>
-                                    <input type="text" aria-label="Potencia" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">M</option>
-                                        <option value="2">k</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">VA</option>
-                                        <option value="2">pu</option>
-                                        <option value="3">W</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Tensão lado Alta</span>
-                                    <input type="text" aria-label="Tensão lado Alta" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">k</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">V</option>
-                                        <option value="2">pu</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Tensão lado Baixa</span>
-                                    <input type="text" aria-label="Tensão lado Baixa" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">k</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">V</option>
-                                        <option value="2">pu</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Impedância</span>
-                                    <input type="text" aria-label="Impedância" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">%</option>
-                                        <option value="2">m</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">Ohm</option>
-                                        <option value="2">pu</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Terminais (Alta, Baixa)</span>
-                                    <input type="text" aria-label="Terminal lado Alta" class="form-control">
-                                    <input type="text" aria-label="Terminal lado Baixa" class="form-control">
-                                </div>
-                            </fieldset> 
-                            <button type="button" class="container-fluid btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
+        <div class="container p-0">
+            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                Adicionar Transformador
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+            </button>
+            <div class="collapse" id="collapse2">
+                <div class="card card-body">
+                    <form method="POST" action="" class="px-3">
+                        {{ form.hidden_tag() }}
+                        <fieldset>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Potência</span>
+                                <input type="text" aria-label="Potencia" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">M</option>
+                                    <option value="2">k</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">VA</option>
+                                    <option value="2">pu</option>
+                                    <option value="3">W</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Tensão lado Alta</span>
+                                <input type="text" aria-label="Tensão lado Alta" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">k</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">V</option>
+                                    <option value="2">pu</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Tensão lado Baixa</span>
+                                <input type="text" aria-label="Tensão lado Baixa" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">k</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">V</option>
+                                    <option value="2">pu</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Impedância</span>
+                                <input type="text" aria-label="Impedância" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">%</option>
+                                    <option value="2">m</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">Ohm</option>
+                                    <option value="2">pu</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Terminais (Alta, Baixa)</span>
+                                <input type="text" aria-label="Terminal lado Alta" class="form-control">
+                                <input type="text" aria-label="Terminal lado Baixa" class="form-control">
+                            </div>
+                        </fieldset> 
+                        <button type="button" class="container-fluid btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="row">
-                <button class="btn btn-primary bg-steel border-5 border-dark w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
-                    Adicionar Linha de Trasmissão Curta
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                    </svg>
-                </button>
-                <div class="collapse" id="collapse3">
-                    <div class="card card-body">
-                        <form method="POST" action="" class="px-3">
-                            {{ form.hidden_tag() }}
-                            <fieldset>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Impedância Série</span>
-                                    <input type="text" aria-label="Impedância Série" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">%</option>
-                                        <option value="2">m</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">Ohm</option>
-                                        <option value="2">Ohm/km</option>
-                                        <option value="3">pu</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Terminais</span>
-                                    <input type="text" aria-label="Terminal1" class="form-control">
-                                    <input type="text" aria-label="Terminal2" class="form-control">
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Comprimento da linha</span>
-                                    <input type="text" aria-label="Comprimento da linha" class="form-control">
-                                    <span class="input-group-text w-5">km</span>
-                                </div>
-                            </fieldset> 
-                            <button type="button" class="container-fluid btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
+        <div class="container p-0">
+            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                Adicionar Linha de Trasmissão Curta
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+            </button>
+            <div class="collapse" id="collapse3">
+                <div class="card card-body">
+                    <form method="POST" action="" class="px-3">
+                        {{ form.hidden_tag() }}
+                        <fieldset>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Impedância Série</span>
+                                <input type="text" aria-label="Impedância Série" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">%</option>
+                                    <option value="2">m</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">Ohm</option>
+                                    <option value="2">Ohm/km</option>
+                                    <option value="3">pu</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Terminais</span>
+                                <input type="text" aria-label="Terminal1" class="form-control">
+                                <input type="text" aria-label="Terminal2" class="form-control">
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Comprimento da linha</span>
+                                <input type="text" aria-label="Comprimento da linha" class="form-control">
+                                <span class="input-group-text w-5">km</span>
+                            </div>
+                        </fieldset> 
+                        <button type="button" class="container-fluid btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="row">
-                <button class="btn btn-primary bg-steel border-5 border-dark w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
-                    Adicionar Linha de Trasmissão Média
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                    </svg>
-                </button>
-                <div class="collapse" id="collapse4">
-                    <div class="card card-body">
-                        <form method="POST" action="" class="px-3">
-                            {{ form.hidden_tag() }}
-                            <fieldset>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Impedância Série</span>
-                                    <input type="text" aria-label="Impedância Série" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">%</option>
-                                        <option value="2">m</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">Ohm</option>
-                                        <option value="2">Ohm/km</option>
-                                        <option value="3">pu</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Impedância Shunt</span>
-                                    <input type="text" aria-label="Impedância Shunt" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">%</option>
-                                        <option value="2">m</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">Ohm</option>
-                                        <option value="2">kOhm*km</option>
-                                        <option value="3">pu</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Terminais</span>
-                                    <input type="text" aria-label="Terminal1" class="form-control">
-                                    <input type="text" aria-label="Terminal2" class="form-control">
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Comprimento da linha</span>
-                                    <input type="text" aria-label="Comprimento da linha" class="form-control">
-                                    <span class="input-group-text w-5">km</span>
-                                </div>
-                            </fieldset> 
-                            <button type="button" class="container-fluid btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
+        <div class="container p-0">
+            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                Adicionar Linha de Trasmissão Média
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+            </button>
+            <div class="collapse" id="collapse4">
+                <div class="card card-body">
+                    <form method="POST" action="" class="px-3">
+                        {{ form.hidden_tag() }}
+                        <fieldset>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Impedância Série</span>
+                                <input type="text" aria-label="Impedância Série" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">%</option>
+                                    <option value="2">m</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">Ohm</option>
+                                    <option value="2">Ohm/km</option>
+                                    <option value="3">pu</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Impedância Shunt</span>
+                                <input type="text" aria-label="Impedância Shunt" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">%</option>
+                                    <option value="2">m</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">Ohm</option>
+                                    <option value="2">kOhm*km</option>
+                                    <option value="3">pu</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Terminais</span>
+                                <input type="text" aria-label="Terminal1" class="form-control">
+                                <input type="text" aria-label="Terminal2" class="form-control">
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Comprimento da linha</span>
+                                <input type="text" aria-label="Comprimento da linha" class="form-control">
+                                <span class="input-group-text w-5">km</span>
+                            </div>
+                        </fieldset> 
+                        <button type="button" class="container-fluid btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="row">
-                <button class="btn btn-primary bg-steel border-5 border-dark w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
-                    Adicionar Carga
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                    </svg>
-                </button>
-                <div class="collapse" id="collapse5">
-                    <div class="card card-body">
-                        <form method="POST" action="" class="px-3">
-                            {{ form.hidden_tag() }}
-                            <fieldset>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Potência</span>
-                                    <input type="text" aria-label="Potencia" class="form-control">
-                                    <select class="form-select" aria-label="Select multiplier">
-                                        <option selected>Multiplicador</option>
-                                        <option value="1">M</option>
-                                        <option value="2">k</option>
-                                    </select>
-                                    <select class="form-select" aria-label="Select measurement unit">
-                                        <option selected>Unidade de Medida</option>
-                                        <option value="1">VA</option>
-                                        <option value="2">pu</option>
-                                        <option value="3">W</option>
-                                    </select>
-                                </div>
-                                <div class="container input-group p-0">
-                                    <span class="input-group-text w-25">Terminal</span>
-                                    <input type="text" aria-label="Terminal1" class="form-control">
-                                </div>
-                            </fieldset> 
-                            <button type="button" class="container-fluid btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
+        <div class="container p-0">
+            <button class="btn btn-secondary w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                Adicionar Carga
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+            </button>
+            <div class="collapse" id="collapse5">
+                <div class="card card-body">
+                    <form method="POST" action="" class="px-3">
+                        {{ form.hidden_tag() }}
+                        <fieldset>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Potência</span>
+                                <input type="text" aria-label="Potencia" class="form-control">
+                                <select class="form-select" aria-label="Select multiplier">
+                                    <option selected>Multiplicador</option>
+                                    <option value="1">M</option>
+                                    <option value="2">k</option>
+                                </select>
+                                <select class="form-select" aria-label="Select measurement unit">
+                                    <option selected>Unidade de Medida</option>
+                                    <option value="1">VA</option>
+                                    <option value="2">pu</option>
+                                    <option value="3">W</option>
+                                </select>
+                            </div>
+                            <div class="container input-group p-0">
+                                <span class="input-group-text w-25">Terminal</span>
+                                <input type="text" aria-label="Terminal1" class="form-control">
+                            </div>
+                        </fieldset> 
+                        <button type="button" class="container-fluid btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="col">
-            <div class="row">
-                <button class="btn btn-primary bg-steel border-5 border-dark w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
-                    Adicionar Problema
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-                    </svg>
-                </button>
-                <div class="collapse" id="collapse6">
-                    <div class="card card-body">
-                        <div class="mb-3">
-                            <label for="formFile" class="form-label">Escolha o arquivo CSV do problema</label>
-                            <input class="form-control" type="file" id="formFile">
-                        </div>
+        <div class="container p-0">
+            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                Adicionar Problema
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+            </button>
+            <div class="collapse" id="collapse6">
+                <div class="card card-body">
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">Escolha o arquivo CSV do problema</label>
+                        <input class="form-control" type="file" id="formFile">
                     </div>
+                    <button type="button" class="container-fluid btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="content-section">
+            <h3>Componentes do sistema: {{ form.data }}</h3>
+            
+            {% if form.data != None %}
+                <div class="dropdown mb-3">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Gerador
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item">
+                            {{ form.power_mag.data }}
+                            {{ form.power_mult.data }}
+                            {{ form.power_measure.data }}
+                        </a></li>
+                    </ul>
+                </div>
+            {% endif %}
+            <button type="button" class="container-fluid btn btn-secondary" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-play-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+                </svg>
+            </button>
         </div>
     </div>
 

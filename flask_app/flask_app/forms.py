@@ -1,8 +1,9 @@
 from xml.dom import ValidationErr
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField, DecimalField
 from wtforms.validators import Length, Email, EqualTo, InputRequired, ValidationError
 from flask_app.models import User, Problem
+import sys
 
 class RegistrationForm(FlaskForm):
     username = StringField('Nome', 
@@ -34,13 +35,24 @@ class LogInForm(FlaskForm):
     remember = BooleanField('Lembrar-me')
     submit = SubmitField('Iniciar Sessão')
 
-    def validate_username(self, username):
-        if True:
-            raise ValidationError('Validation Message')
-
-
-
-
-    # def validate_field(self, field):
+    # def validate_email(self, email):
     #     if True:
     #         raise ValidationError('Validation Message')
+
+
+mult_choices = ['k', 'M']
+measurement_choices = ['VA', 'W']
+
+class GeneratorForm(FlaskForm):
+    power_mag = DecimalField('Potência')
+    power_mult = SelectField('Mult', choices=mult_choices)
+    power_measure = SelectField('Medida', choices=measurement_choices)
+    submit = SubmitField('Adicionar')
+
+    # def validate_submit(self, submit):
+    #     if submit:
+    #         raise ValidationError('Validation Message')
+
+# def validate_field(self, field):
+#         if True:
+#             raise ValidationError('Validation Message')
