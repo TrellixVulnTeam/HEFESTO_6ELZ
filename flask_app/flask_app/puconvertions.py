@@ -178,6 +178,7 @@ class Impedance(Number):
 class Generators():
     """This class models the eletric component of eletric power systems know as generator.
     """
+    name = 'Gerador'
     instances = []
     def __init__(self, impedance, terminals, power=None, voltage=None) -> None:
         """Constructor method.
@@ -225,6 +226,7 @@ class Generators():
 class Transformers():
     """This class models the eletric component of eletric power systems know as transformer.
     """
+    name = 'Transformador'
     instances = []
     def __init__(self, impedance, terminals, power=None, voltage_h=None, voltage_l=None) -> None:
         """Constructor method.
@@ -272,6 +274,7 @@ class Transformers():
 class ShortTLines():
     """This class models the eletric component of eletric power systems know as short transmission line.
     """
+    name = 'Linha de Transmissão Pequena'
     instances = []
     def __init__(self, series_impedance, terminals) -> None:
         """Constructor method.
@@ -300,6 +303,7 @@ class ShortTLines():
 class MediumTLines():
     """This class models the eletric component of eletric power systems know as medium transmission line.
     """
+    name = 'Linha de Transmissão Média'
     instances = []
     def __init__(self, series_impedance, shunt_impedance, terminals) -> None:
         """Constructor method.
@@ -372,6 +376,7 @@ class PowerFactor():
 class Loads():
     """This class models the eletric component of eletric power systems know as load.
     """
+    name = 'Carga'
     instances = []
     def __init__(self, terminals, power=None, power_factor=None, impedance = None) -> None:
         """Constructor method.
@@ -633,7 +638,6 @@ class PuConvesions():
             Print.print_components(load)
             
 
-
 class Print():
     """This class hosts the print methods.
     """
@@ -658,14 +662,34 @@ class Print():
                     print(f"{attr} = {str(value)[:12]}{value['nominal'].mag}{value['nominal'].multiplier}{value['nominal'].measurement_unit}{str(value)[57:67]}{value['base'].mag}{value['base'].multiplier}{value['base'].measurement_unit}{str(value)[112:]}")
 
 
-class FormToGenerator():
+class FormToObj():
+    component_list = []
     @staticmethod
-    def generate_generator(form):
-        t = "Valor puconv.py"
-        return f"""form.power_mag.data = {form.power_mag.data} +
-                form.power_mult.data = {form.power_mult.data} + 
-                form.power_measure.data = {form.power_measure.data} + 
-                {t}"""
+    def generator(form):
+        d = DefaultDictFormat()
+        pg = Power(form.power_mag, form.power_mult, form.power_measure)
+        tg = (form.t0, form.t1)
+        vg = d.get_dict_struct(Voltage(form.voltage_mag, form.voltage_mult, form.voltage_measure, form.t1))
+        zpug = d.get_dict_struct(Impedance(form.impedance_mag, form.impedance_mult, form.impedance_measure, 'series'))
+        g = Generators(zpug, tg, pg, vg)
+        FormToObj.component_list.append(g)
+        return FormToObj.component_list
+
+    @staticmethod
+    def transformer(form):
+        d = DefaultDictFormat()
+        pt = Power(form.power_mag, form.power_mult, form.power_measure)
+        tt = (form.t0, form.t1)
+        vht = d.get_dict_struct(Voltage(form.high_voltage_mag, form.high_voltage_mult, form.high_voltage_measure, form.t0))
+        vlt = d.get_dict_struct(Voltage(form.low_voltage_mag, form.low_voltage_mult, form.low_voltage_measure, form.t1))
+        zput = d.get_dict_struct(Impedance(form.impedance_mag, form.impedance_mult, form.impedance_measure, 'series'))
+        t = Transformers(zput, tt, vht, vlt, pt)
+        FormToObj.component_list.append(t)
+        return FormToObj.component_list
+
+    @staticmethod
+    def get_components():
+        return FormToObj.component_list
 
 
 def main():

@@ -40,18 +40,46 @@ class LogInForm(FlaskForm):
     #         raise ValidationError('Validation Message')
 
 
-mult_choices = ['k', 'M']
-measurement_choices = ['VA', 'W']
+mult_choices = {'power': ['M', 'k'], 'voltage': ['k', '%'], 'impedance': ['%', '']}
+measurement_choices = {'power': ['VA', 'W'], 'voltage': ['V', 'pu'], 'impedance': ['pu', 'ohm', 'ohm/km', 'kohm/km']}
 
-class GeneratorForm(FlaskForm):
+class PuGeneratorForm(FlaskForm):
+    # Gerador
     power_mag = DecimalField('Potência')
-    power_mult = SelectField('Mult', choices=mult_choices)
-    power_measure = SelectField('Medida', choices=measurement_choices)
-    submit = SubmitField('Adicionar')
+    power_mult = SelectField('Mult', choices=mult_choices['power'])
+    power_measure = SelectField('Medida', choices=measurement_choices['power'])
+    voltage_mag = DecimalField('Tensão')
+    voltage_mult = SelectField('Mult', choices=mult_choices['voltage'])
+    voltage_measure = SelectField('Medida', choices=measurement_choices['voltage'])
+    impedance_mag = DecimalField('Impedância')
+    impedance_mult = SelectField('Mult', choices=mult_choices['impedance'])
+    impedance_measure = SelectField('Medida', choices=measurement_choices['impedance'])
+    t0 = DecimalField('Terminal-0')
+    t1 = DecimalField('Terminal-1')
+    submit_gen = SubmitField('Gerador')
 
-    # def validate_submit(self, submit):
-    #     if submit:
-    #         raise ValidationError('Validation Message')
+
+class PuTransformerForm(FlaskForm):
+    # Transformador
+    power_mag = DecimalField('Potência')
+    power_mult = SelectField('Mult', choices=mult_choices['power'])
+    power_measure = SelectField('Medida', choices=measurement_choices['power'])
+    high_voltage_mag = DecimalField('Alta Tensão')
+    high_voltage_mult = SelectField('Mult', choices=mult_choices['voltage'])
+    high_voltage_measure = SelectField('Medida', choices=measurement_choices['voltage'])
+    low_voltage_mag = DecimalField('Baixa Tensão')
+    low_voltage_mult = SelectField('Mult', choices=mult_choices['voltage'])
+    low_voltage_measure = SelectField('Medida', choices=measurement_choices['voltage'])
+    impedance_mag = DecimalField('Impedância')
+    impedance_mult = SelectField('Mult', choices=mult_choices['impedance'])
+    impedance_measure = SelectField('Medida', choices=measurement_choices['impedance'])
+    t0 = DecimalField('Terminal-0')
+    t1 = DecimalField('Terminal-1')
+    submit_tran = SubmitField('Transformador')
+
+# def validate_submit(self, submit):
+#     if submit:
+#         raise ValidationError('Validation Message')
 
 # def validate_field(self, field):
 #         if True:

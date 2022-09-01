@@ -11,62 +11,79 @@
             <div class="collapse" id="collapse1">
                 <div class="card card-body">
                     <form method="POST" action="" class="px-3">
-                        {{ form.hidden_tag() }}
+                        {{ gen_form.hidden_tag() }}
                         <fieldset>
                             <div class="container input-group p-0">
-                                
                                 <span class="input-group-text w-25">Potência</span>
-
-                                {% if form.power_mag.errors %}
-                                    {{ form.power_mag(class="form-control is-invalid") }}
+                                {% if gen_form.power_mag.errors %}
+                                    {{ gen_form.power_mag(class="form-control is-invalid") }}
+                                    {{ gen_form.power_mult(class="form-control form-select") }}
+                                    {{ gen_form.power_measure(class="form-control form-select") }}
                                     <div class="invalid-feedback text-center">
-                                        {% for error in form.power_mag.errors %}
+                                        {% for error in gen_form.power_mag.errors %}
                                             <span>{{ error }}</span>
                                         {% endfor %}
                                     </div>
                                 {% else %}
-                                    {{ form.power_mag(class="form-control") }}
-                                    {{ form.power_mult(class="form-control form-select") }}
-                                    {{ form.power_measure(class="form-control form-select") }}
+                                    {{ gen_form.power_mag(class="form-control") }}
+                                    {{ gen_form.power_mult(class="form-control form-select") }}
+                                    {{ gen_form.power_measure(class="form-control form-select") }}
                                 {% endif %}
-                                
-                                
-                                
                             </div>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Tensão</span>
-                                <input type="text" aria-label="Tensão" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">k</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">V</option>
-                                    <option value="2">pu</option>
-                                </select>
+                                {% if gen_form.voltage_mag.errors %}
+                                    {{ gen_form.voltage_mag(class="form-control is-invalid") }}
+                                    {{ gen_form.voltage_mult(class="form-control form-select") }}
+                                    {{ gen_form.voltage_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in gen_form.voltage_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ gen_form.voltage_mag(class="form-control") }}
+                                    {{ gen_form.voltage_mult(class="form-control form-select") }}
+                                    {{ gen_form.voltage_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Impedância</span>
-                                <input type="text" aria-label="Impedância" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">%</option>
-                                    <option value="2">m</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">Ohm</option>
-                                    <option value="2">pu</option>
-                                </select>
+                                {% if gen_form.impedance_mag.errors %}
+                                    {{ gen_form.impedance_mag(class="form-control is-invalid") }}
+                                    {{ gen_form.impedance_mult(class="form-control form-select") }}
+                                    {{ gen_form.impedance_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in gen_form.impedance_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ gen_form.impedance_mag(class="form-control") }}
+                                    {{ gen_form.impedance_mult(class="form-control form-select") }}
+                                    {{ gen_form.impedance_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Terminais</span>
-                                <input type="text" aria-label="Terminal1" class="form-control">
-                                <input type="text" aria-label="Terminal2" class="form-control">
+                                {% if gen_form.t0.errors or gen_form.t1.errors %}
+                                    {{ gen_form.t0(class="form-control is-invalid") }}
+                                    {{ gen_form.t1(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in gen_form.t0.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                        {% for error in gen_form.t1.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ gen_form.t0(class="form-control") }}
+                                    {{ gen_form.t1(class="form-control") }}
+                                {% endif %}
                             </div>
                         </fieldset> 
-                        {{ form.submit(class="btn btn-primary mb-3 w-100") }}
+                        {{ gen_form.submit_gen(class="btn btn-secondary mb-3 w-100") }}
                         <!-- <button type="button" name="submit_gen" class="container-fluid btn btn-secondary" value='submit'>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
@@ -86,74 +103,101 @@
             <div class="collapse" id="collapse2">
                 <div class="card card-body">
                     <form method="POST" action="" class="px-3">
-                        {{ form.hidden_tag() }}
+                        {{ tran_form.hidden_tag() }}
                         <fieldset>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Potência</span>
-                                <input type="text" aria-label="Potencia" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">M</option>
-                                    <option value="2">k</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">VA</option>
-                                    <option value="2">pu</option>
-                                    <option value="3">W</option>
-                                </select>
+                                {% if tran_form.power_mag.errors %}
+                                    {{ tran_form.power_mag(class="form-control is-invalid") }}
+                                    {{ tran_form.power_mult(class="form-control form-select") }}
+                                    {{ tran_form.power_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in tran_form.power_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ tran_form.power_mag(class="form-control") }}
+                                    {{ tran_form.power_mult(class="form-control form-select") }}
+                                    {{ tran_form.power_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
-                                <span class="input-group-text w-25">Tensão lado Alta</span>
-                                <input type="text" aria-label="Tensão lado Alta" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">k</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">V</option>
-                                    <option value="2">pu</option>
-                                </select>
+                                <span class="input-group-text w-25">Alta Tensão</span>
+                                {% if tran_form.high_voltage_mag.errors %}
+                                    {{ tran_form.high_voltage_mag(class="form-control is-invalid") }}
+                                    {{ tran_form.high_voltage_mult(class="form-control form-select") }}
+                                    {{ tran_form.high_voltage_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in tran_form.high_voltage_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ tran_form.high_voltage_mag(class="form-control") }}
+                                    {{ tran_form.high_voltage_mult(class="form-control form-select") }}
+                                    {{ tran_form.high_voltage_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
-                                <span class="input-group-text w-25">Tensão lado Baixa</span>
-                                <input type="text" aria-label="Tensão lado Baixa" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">k</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">V</option>
-                                    <option value="2">pu</option>
-                                </select>
+                                <span class="input-group-text w-25">Baixa Tensão</span>
+                                {% if tran_form.low_voltage_mag.errors %}
+                                    {{ tran_form.low_voltage_mag(class="form-control is-invalid") }}
+                                    {{ tran_form.low_voltage_mult(class="form-control form-select") }}
+                                    {{ tran_form.low_voltage_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in tran_form.low_voltage_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ tran_form.low_voltage_mag(class="form-control") }}
+                                    {{ tran_form.low_voltage_mult(class="form-control form-select") }}
+                                    {{ tran_form.low_voltage_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Impedância</span>
-                                <input type="text" aria-label="Impedância" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">%</option>
-                                    <option value="2">m</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">Ohm</option>
-                                    <option value="2">pu</option>
-                                </select>
+                                {% if tran_form.impedance_mag.errors %}
+                                    {{ tran_form.impedance_mag(class="form-control is-invalid") }}
+                                    {{ tran_form.impedance_mult(class="form-control form-select") }}
+                                    {{ tran_form.impedance_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in tran_form.impedance_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ tran_form.impedance_mag(class="form-control") }}
+                                    {{ tran_form.impedance_mult(class="form-control form-select") }}
+                                    {{ tran_form.impedance_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
-                                <span class="input-group-text w-25">Terminais (Alta, Baixa)</span>
-                                <input type="text" aria-label="Terminal lado Alta" class="form-control">
-                                <input type="text" aria-label="Terminal lado Baixa" class="form-control">
+                                <span class="input-group-text w-25">Terminais</span>
+                                {% if tran_form.t0.errors or tran_form.t1.errors %}
+                                    {{ tran_form.t0(class="form-control is-invalid") }}
+                                    {{ tran_form.t1(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in tran_form.t0.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                        {% for error in tran_form.t1.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ tran_form.t0(class="form-control") }}
+                                    {{ tran_form.t1(class="form-control") }}
+                                {% endif %}
                             </div>
-                        </fieldset> 
-                        <button type="button" class="container-fluid btn btn-secondary">
+                        </fieldset>
+                        {{ tran_form.submit_tran(class="btn btn-secondary mb-3 w-100") }} 
+                        <!-- <button type="button" class="container-fluid btn btn-secondary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
                             </svg>
-                        </button>
+                        </button> -->
                     </form>
                 </div>
             </div>
@@ -168,7 +212,7 @@
             <div class="collapse" id="collapse3">
                 <div class="card card-body">
                     <form method="POST" action="" class="px-3">
-                        {{ form.hidden_tag() }}
+                        {{ tran_form.hidden_tag() }}
                         <fieldset>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Impedância Série</span>
@@ -215,7 +259,7 @@
             <div class="collapse" id="collapse4">
                 <div class="card card-body">
                     <form method="POST" action="" class="px-3">
-                        {{ form.hidden_tag() }}
+                        {{ tran_form.hidden_tag() }}
                         <fieldset>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Impedância Série</span>
@@ -277,7 +321,7 @@
             <div class="collapse" id="collapse5">
                 <div class="card card-body">
                     <form method="POST" action="" class="px-3">
-                        {{ form.hidden_tag() }}
+                        {{ tran_form.hidden_tag() }}
                         <fieldset>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Potência</span>
@@ -331,22 +375,15 @@
         </div>
     </div>
     <div class="col-md-4">
-        <div class="content-section">
-            <h3>Componentes do sistema: {{ form.data }}</h3>
-            
-            {% if form.data != None %}
-                <div class="dropdown mb-3">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Gerador
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item">
-                            {{ form.power_mag.data }}
-                            {{ form.power_mult.data }}
-                            {{ form.power_measure.data }}
-                        </a></li>
-                    </ul>
-                </div>
+        <div class="content-section">            
+            {% if component_list %}
+                {% for component in component_list %}
+                    <div class="dropdown mb-3">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ component.name }}
+                        </button>
+                    </div>
+                {% endfor %}
             {% endif %}
             <button type="button" class="container-fluid btn btn-secondary" >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-play-circle-fill" viewBox="0 0 16 16">

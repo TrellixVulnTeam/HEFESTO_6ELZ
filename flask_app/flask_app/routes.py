@@ -2,7 +2,7 @@
 from multiprocessing.spawn import import_main_path
 from flask import render_template, url_for, flash, redirect, request
 from flask_app import app, db, bcrypt
-from flask_app.forms import RegistrationForm, LogInForm, GeneratorForm
+from flask_app.forms import RegistrationForm, LogInForm, PuGeneratorForm, PuTransformerForm
 from flask_app.models import User, Problem
 from flask_login import login_user, current_user, logout_user, login_required
 import flask_app.puconvertions as pucv
@@ -10,14 +10,6 @@ import sys
 
 db.create_all()
 titles = ['Pu Conversion Tool', 'Register', 'Login']
-
-dummy_input = [
-    {  
-        'description': 'System base values',
-        'power': '100MVA',
-        'voltage': '13.8kV in Bar 1'
-    }
-]
 
 @app.route("/")
 @app.route("/home")
@@ -71,7 +63,11 @@ def account():
 @app.route("/puconversions", methods=['GET', 'POST'])
 @login_required
 def pu_conversion():
-    form = GeneratorForm()
-    if form.validate_on_submit():
-        flash(f"{pucv.FormToGenerator.generate_generator(form)}", 'success')
-    return render_template("puconversions.html", title='Conversão Pu', form=form)
+    component_list = pucv.FormToObj.get_components()
+    gen_form = PuGeneratorForm()
+    tran_form = PuTransformerForm()
+    if gen_form.validate_on_submit():
+        component_list = pucv.FormToObj.generator(gen_form)
+    if tran_form.validate_on_submit():
+        component_list = pucv.FormToObj.transformer(tran_form)
+    return render_template("puconversions.html", title='Conversão Pu', gen_form=gen_form, tran_form=tran_form, component_list=component_list)
