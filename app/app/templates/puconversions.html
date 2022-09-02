@@ -2,7 +2,7 @@
 {% block content %}
     <div class="container col-md-8 content-section mb-2 py-3 px-4">
         <div class="container p-0">
-            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+            <button class="btn btn-dark my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
                 Adicionar Gerador
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
@@ -94,7 +94,7 @@
             </div>
         </div>
         <div class="container p-0">
-            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+            <button class="btn btn-dark my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
                 Adicionar Transformador
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
@@ -203,7 +203,7 @@
             </div>
         </div>
         <div class="container p-0">
-            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+            <button class="btn btn-dark my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
                 Adicionar Linha de Trasmissão Curta
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
@@ -212,45 +212,69 @@
             <div class="collapse" id="collapse3">
                 <div class="card card-body">
                     <form method="POST" action="" class="px-3">
-                        {{ tran_form.hidden_tag() }}
+                        {{ short_tline_form.hidden_tag() }}
                         <fieldset>
                             <div class="container input-group p-0">
-                                <span class="input-group-text w-25">Impedância Série</span>
-                                <input type="text" aria-label="Impedância Série" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">%</option>
-                                    <option value="2">m</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">Ohm</option>
-                                    <option value="2">Ohm/km</option>
-                                    <option value="3">pu</option>
-                                </select>
+                                <span class="input-group-text w-25">Impedância</span>
+                                {% if short_tline_form.series_impedance_mag.errors %}
+                                    {{ short_tline_form.series_impedance_mag(class="form-control is-invalid") }}
+                                    {{ short_tline_form.series_impedance_mult(class="form-control form-select") }}
+                                    {{ short_tline_form.series_impedance_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in short_tline_form.series_impedance_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ short_tline_form.series_impedance_mag(class="form-control") }}
+                                    {{ short_tline_form.series_impedance_mult(class="form-control form-select") }}
+                                    {{ short_tline_form.series_impedance_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Terminais</span>
-                                <input type="text" aria-label="Terminal1" class="form-control">
-                                <input type="text" aria-label="Terminal2" class="form-control">
+                                {% if short_tline_form.t0.errors or short_tline_form.t1.errors %}
+                                    {{ short_tline_form.t0(class="form-control is-invalid") }}
+                                    {{ short_tline_form.t1(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in short_tline_form.t0.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                        {% for error in short_tline_form.t1.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ short_tline_form.t0(class="form-control") }}
+                                    {{ short_tline_form.t1(class="form-control") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
-                                <span class="input-group-text w-25">Comprimento da linha</span>
-                                <input type="text" aria-label="Comprimento da linha" class="form-control">
-                                <span class="input-group-text w-5">km</span>
+                                <span class="input-group-text w-25">Comprimento</span>
+                                {% if short_tline_form.lenght.errors %}
+                                    {{ short_tline_form.lenght(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in short_tline_form.lenght.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ short_tline_form.lenght(class="form-control") }}
+                                {% endif %}
                             </div>
-                        </fieldset> 
-                        <button type="button" class="container-fluid btn btn-secondary">
+                        </fieldset>
+                        {{ short_tline_form.submit_stl(class="btn btn-secondary mb-3 w-100") }} 
+                        <!-- <button type="button" class="container-fluid btn btn-secondary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
                             </svg>
-                        </button>
+                        </button> -->
                     </form>
                 </div>
             </div>
         </div>
         <div class="container p-0">
-            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+            <button class="btn btn-dark my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
                 Adicionar Linha de Trasmissão Média
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
@@ -259,60 +283,86 @@
             <div class="collapse" id="collapse4">
                 <div class="card card-body">
                     <form method="POST" action="" class="px-3">
-                        {{ tran_form.hidden_tag() }}
+                        {{ medium_tline_form.hidden_tag() }}
                         <fieldset>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Impedância Série</span>
-                                <input type="text" aria-label="Impedância Série" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">%</option>
-                                    <option value="2">m</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">Ohm</option>
-                                    <option value="2">Ohm/km</option>
-                                    <option value="3">pu</option>
-                                </select>
+                                {% if medium_tline_form.series_impedance_mag.errors %}
+                                    {{ medium_tline_form.series_impedance_mag(class="form-control is-invalid") }}
+                                    {{ medium_tline_form.series_impedance_mult(class="form-control form-select") }}
+                                    {{ medium_tline_form.series_impedance_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in medium_tline_form.series_impedance_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ medium_tline_form.series_impedance_mag(class="form-control") }}
+                                    {{ medium_tline_form.series_impedance_mult(class="form-control form-select") }}
+                                    {{ medium_tline_form.series_impedance_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Impedância Shunt</span>
-                                <input type="text" aria-label="Impedância Shunt" class="form-control">
-                                <select class="form-select" aria-label="Select multiplier">
-                                    <option selected>Multiplicador</option>
-                                    <option value="1">%</option>
-                                    <option value="2">m</option>
-                                </select>
-                                <select class="form-select" aria-label="Select measurement unit">
-                                    <option selected>Unidade de Medida</option>
-                                    <option value="1">Ohm</option>
-                                    <option value="2">kOhm*km</option>
-                                    <option value="3">pu</option>
-                                </select>
+                                {% if medium_tline_form.shunt_impedance_mag.errors %}
+                                    {{ medium_tline_form.shunt_impedance_mag(class="form-control is-invalid") }}
+                                    {{ medium_tline_form.shunt_impedance_mult(class="form-control form-select") }}
+                                    {{ medium_tline_form.shunt_impedance_measure(class="form-control form-select") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in medium_tline_form.shunt_impedance_mag.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ medium_tline_form.shunt_impedance_mag(class="form-control") }}
+                                    {{ medium_tline_form.shunt_impedance_mult(class="form-control form-select") }}
+                                    {{ medium_tline_form.shunt_impedance_measure(class="form-control form-select") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
                                 <span class="input-group-text w-25">Terminais</span>
-                                <input type="text" aria-label="Terminal1" class="form-control">
-                                <input type="text" aria-label="Terminal2" class="form-control">
+                                {% if medium_tline_form.t0.errors or medium_tline_form.t1.errors %}
+                                    {{ medium_tline_form.t0(class="form-control is-invalid") }}
+                                    {{ medium_tline_form.t1(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in medium_tline_form.t0.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                        {% for error in medium_tline_form.t1.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ medium_tline_form.t0(class="form-control") }}
+                                    {{ medium_tline_form.t1(class="form-control") }}
+                                {% endif %}
                             </div>
                             <div class="container input-group p-0">
-                                <span class="input-group-text w-25">Comprimento da linha</span>
-                                <input type="text" aria-label="Comprimento da linha" class="form-control">
-                                <span class="input-group-text w-5">km</span>
+                                <span class="input-group-text w-25">Comprimento</span>
+                                {% if medium_tline_form.lenght.errors %}
+                                    {{ medium_tline_form.lenght(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback text-center">
+                                        {% for error in medium_tline_form.lenght.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ medium_tline_form.lenght(class="form-control") }}
+                                {% endif %}
                             </div>
-                        </fieldset> 
-                        <button type="button" class="container-fluid btn btn-secondary">
+                        </fieldset>
+                        {{ medium_tline_form.submit_mtl(class="btn btn-secondary mb-3 w-100") }} 
+                        <!-- <button type="button" class="container-fluid btn btn-secondary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
                             </svg>
-                        </button>
+                        </button> -->
                     </form>
                 </div>
             </div>
         </div>
         <div class="container p-0">
-            <button class="btn btn-secondary w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+            <button class="btn btn-dark w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
                 Adicionar Carga
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
@@ -353,7 +403,7 @@
             </div>
         </div>
         <div class="container p-0">
-            <button class="btn btn-secondary my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+            <button class="btn btn-dark my-1 w-50 d-flex justify-content-between" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
                 Adicionar Problema
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill ms-2" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
@@ -375,17 +425,49 @@
         </div>
     </div>
     <div class="col-md-4">
-        <div class="content-section">            
+        <div class="content-section">
             {% if component_list %}
                 {% for component in component_list %}
-                    <div class="dropdown mb-3">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ component.name }}
+                    <div class="dropdown m-0">
+                        <button id="dropdown" class="btn btn-light border border-dark container-fluid p-0 m-0 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ component.name }} {{ component.id }}
                         </button>
+                        <ul class="dropdown-menu container-fluid" aria-labelledby="dropdown">
+                            {% for attr, value in component.__dict__.items() %}
+                                {% if value.name == 'Potência' %}
+                                    <li class="dropdown-item">
+                                        Potência: 
+                                        {{ value.mag }}{{ value.multiplier }}{{ value.measurement_unit }}
+                                    </li>
+                                {% endif %}
+                                {% if value is mapping %}
+                                    {% if value['nominal'].name == 'Potência' %}
+                                        <li class="dropdown-item">
+                                            Potência: 
+                                            {{ value['nominal'].mag }}{{ value['nominal'].multiplier }}{{ value['nominal'].measurement_unit }}
+                                        </li>
+                                    {% endif %}
+                                    {% if value['nominal'].name == 'Tensão' %}
+                                        <li class="dropdown-item">
+                                            Tensão: 
+                                            {{ value['nominal'].mag }}{{ value['nominal'].multiplier }}{{ value['nominal'].measurement_unit }}
+                                            na barra: {{ value['nominal'].bar }}
+                                        </li>
+                                    {% endif %}
+                                    {% if value['nominal'].name == 'Impedância' %}
+                                        <li class="dropdown-item">
+                                            Impedância: 
+                                            {{ value['nominal'].mag }}{{ value['nominal'].multiplier }}{{ value['nominal'].measurement_unit }}
+                                            do tipo: {{ value['nominal'].characteristic }}
+                                        </li>
+                                    {% endif %} 
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endfor %}
             {% endif %}
-            <button type="button" class="container-fluid btn btn-secondary" >
+            <button type="button" class="container-fluid btn btn-secondary mt-1" >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
                 </svg>

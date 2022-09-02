@@ -111,6 +111,7 @@ class Power(Number):
         :param measurement_unit: Power can be specified in 'W' or 'VA'. This parameters specifies which one.
         :type measurement_unit: str.
         """
+        self.name = 'Potência'
         super().__init__(mag, multiplier, measurement_unit)
 
 
@@ -132,6 +133,7 @@ class Voltage(Number):
         :param bar: Since voltage is measured in a bar this parameter was added. A bar is identified by it's number.
         :type bar: int.
         """
+        self.name = 'Tensão'
         super().__init__(mag, multiplier, measurement_unit)
         self.bar = bar
 
@@ -156,6 +158,7 @@ class Impedance(Number):
         :param lenght: When a impedance measurement unit is given in 'ohm/km' or 'kohm*km' a length is needed in order to get the concentraded parameter, defaults to None.
         :type lenght: float or int, optional.
         """
+        self.name = 'Impedância'
         super().__init__(mag, multiplier, measurement_unit)
         self.characteristic = characteristic
         self.len = lenght
@@ -178,8 +181,8 @@ class Impedance(Number):
 class Generators():
     """This class models the eletric component of eletric power systems know as generator.
     """
-    name = 'Gerador'
     instances = []
+
     def __init__(self, impedance, terminals, power=None, voltage=None) -> None:
         """Constructor method.
 
@@ -192,6 +195,7 @@ class Generators():
         :param voltage: A generator has a nominal voltage, when is of interest this parameter specifies that, defaults to None.
         :type voltage: dict {'nominal': Voltage(), 'base': None, 'pu': None}, optional.
         """
+        self.name = 'Gerador'
         Generators.instances.append(self)
         self.id = len(Generators.instances)
         self.power = power
@@ -219,15 +223,12 @@ class Generators():
         """
         self.impedance[key] = impedance
 
-    # def __repr__(self) -> str:
-    #     return [str(self), self.id]
-
 
 class Transformers():
     """This class models the eletric component of eletric power systems know as transformer.
     """
-    name = 'Transformador'
     instances = []
+
     def __init__(self, impedance, terminals, power=None, voltage_h=None, voltage_l=None) -> None:
         """Constructor method.
 
@@ -242,6 +243,7 @@ class Transformers():
         :param voltage_l: A transformer has a low voltage side, when is of interest this parameter specifies that voltage value, defaults to None.
         :type voltage_l: dict {'nominal': Voltage(), 'base': None, 'pu': None}, optional.
         """
+        self.name = 'Transformador'
         Transformers.instances.append(self)
         self.id = len(Transformers.instances)
         self.power = power
@@ -274,8 +276,8 @@ class Transformers():
 class ShortTLines():
     """This class models the eletric component of eletric power systems know as short transmission line.
     """
-    name = 'Linha de Transmissão Pequena'
     instances = []
+
     def __init__(self, series_impedance, terminals) -> None:
         """Constructor method.
 
@@ -284,6 +286,7 @@ class ShortTLines():
         :param terminals:  A short transmission line has a pair of terminals for this representation. This parameter specifies them.
         :type terminals: tuple.
         """
+        self.name = 'Linha de Transmissão Pequena'
         ShortTLines.instances.append(self)
         self.id = len(ShortTLines.instances)
         self.series_impedance = series_impedance
@@ -303,8 +306,8 @@ class ShortTLines():
 class MediumTLines():
     """This class models the eletric component of eletric power systems know as medium transmission line.
     """
-    name = 'Linha de Transmissão Média'
     instances = []
+
     def __init__(self, series_impedance, shunt_impedance, terminals) -> None:
         """Constructor method.
 
@@ -315,6 +318,7 @@ class MediumTLines():
         :param terminals:  A medium transmission line has a pair of terminals for this representation. This parameter specifies them.
         :type terminals: tuple.
         """
+        self.name = 'Linha de Transmissão Média'
         MediumTLines.instances.append(self)
         self.id = len(MediumTLines.instances)
         self.series_impedance = series_impedance
@@ -327,6 +331,7 @@ class MediumTLines():
         """This method corrects the value of shunt impedance per side.
         """
         self.shunt_impedance_per_side['nominal'].mag = 2 * self.shunt_impedance['nominal'].mag
+        self.shunt_impedance_per_side['nominal'].characteristic = 'Shunt/lado'
         
     def set_shunt_impedance_per_side(self, key, impedance):
         """This method sets the shunt impedance per side of the medium transmission line. Since the impedance is a dict this method receives the key and the value to attribute.
@@ -370,14 +375,16 @@ class PowerFactor():
         :param characteristic: _description_
         :type characteristic: _type_
         """
+        self.name = 'Fator de Potência'
         self.pf = pf
         self.characteristic = characteristic
+
 
 class Loads():
     """This class models the eletric component of eletric power systems know as load.
     """
-    name = 'Carga'
     instances = []
+
     def __init__(self, terminals, power=None, power_factor=None, impedance = None) -> None:
         """Constructor method.
 
@@ -390,6 +397,7 @@ class Loads():
         :param impedance: A load can be specified by it's impedance, this parameter specifies that, defaults to None.
         :type impedance: dict {'nominal': Impedance(), 'base': None, 'pu': None}, optional.
         """
+        self.name = 'Carga'
         Loads.instances.append(self)
         self.id = len(Loads.instances)
         self.power = power
@@ -403,6 +411,7 @@ class Bars():
     def __init__(self) -> None:
         """Constructor method.
         """
+        self.name = 'Barra'
         self.id = None
         self.adjacent = []
         self.isVisited = False
@@ -614,7 +623,7 @@ class PuConvesions():
                         line.set_shunt_impedance_per_side('pu', line_shunt_impedance_per_side / line.series_impedance['base'])
                     line.set_series_impedance('pu', line_series_impedance / line.series_impedance['base'])
             Print.print_components(line)
-
+    
 
     def loads_to_pu(self, bars, components):
         """This method converts the loads nominal power to pu.
@@ -667,10 +676,10 @@ class FormToObj():
     @staticmethod
     def generator(form):
         d = DefaultDictFormat()
-        pg = Power(form.power_mag, form.power_mult, form.power_measure)
-        tg = (form.t0, form.t1)
-        vg = d.get_dict_struct(Voltage(form.voltage_mag, form.voltage_mult, form.voltage_measure, form.t1))
-        zpug = d.get_dict_struct(Impedance(form.impedance_mag, form.impedance_mult, form.impedance_measure, 'series'))
+        pg = Power(form.power_mag.data, form.power_mult.data, form.power_measure.data)
+        tg = (form.t0.data, form.t1.data)
+        vg = d.get_dict_struct(Voltage(form.voltage_mag.data, form.voltage_mult.data, form.voltage_measure.data, form.t1.data))
+        zpug = d.get_dict_struct(Impedance(form.impedance_mag.data, form.impedance_mult.data, form.impedance_measure.data, 'Série'))
         g = Generators(zpug, tg, pg, vg)
         FormToObj.component_list.append(g)
         return FormToObj.component_list
@@ -678,14 +687,41 @@ class FormToObj():
     @staticmethod
     def transformer(form):
         d = DefaultDictFormat()
-        pt = Power(form.power_mag, form.power_mult, form.power_measure)
-        tt = (form.t0, form.t1)
-        vht = d.get_dict_struct(Voltage(form.high_voltage_mag, form.high_voltage_mult, form.high_voltage_measure, form.t0))
-        vlt = d.get_dict_struct(Voltage(form.low_voltage_mag, form.low_voltage_mult, form.low_voltage_measure, form.t1))
-        zput = d.get_dict_struct(Impedance(form.impedance_mag, form.impedance_mult, form.impedance_measure, 'series'))
+        pt = Power(form.power_mag.data, form.power_mult.data, form.power_measure.data)
+        tt = (form.t0.data, form.t1.data)
+        vht = d.get_dict_struct(Voltage(form.high_voltage_mag.data, form.high_voltage_mult.data, form.high_voltage_measure.data, form.t0.data))
+        vlt = d.get_dict_struct(Voltage(form.low_voltage_mag.data, form.low_voltage_mult.data, form.low_voltage_measure.data, form.t1.data))
+        zput = d.get_dict_struct(Impedance(form.impedance_mag.data, form.impedance_mult.data, form.impedance_measure.data, 'Série'))
         t = Transformers(zput, tt, vht, vlt, pt)
         FormToObj.component_list.append(t)
         return FormToObj.component_list
+
+    @staticmethod
+    def short_tline(form):
+        d = DefaultDictFormat()
+        tstl = (form.t0.data, form.t1.data)
+        if form.lenght.data:
+            zsstl = d.get_dict_struct(Impedance(complex(form.series_impedance_mag.data), form.series_impedance_mult.data, form.series_impedance_measure.data, 'Série', float(form.lenght.data)))
+        else:
+            zsstl = d.get_dict_struct(Impedance(form.series_impedance_mag.data, form.series_impedance_mult.data, form.series_impedance_measure.data, 'Série'))
+        stl = ShortTLines(zsstl, tstl)
+        FormToObj.component_list.append(stl)
+        return FormToObj.component_list
+
+    @staticmethod
+    def medium_tline(form):
+        d = DefaultDictFormat()
+        tmtl = (form.t0.data, form.t1.data)
+        if form.lenght.data:
+            zsmtl = d.get_dict_struct(Impedance(complex(form.series_impedance_mag.data), form.series_impedance_mult.data, form.series_impedance_measure.data, 'Série', float(form.lenght.data)))
+            zshmtl = d.get_dict_struct(Impedance(complex(form.shunt_impedance_mag.data), form.shunt_impedance_mult.data, form.shunt_impedance_measure.data, 'Shunt', float(form.lenght.data)))
+        else:
+            zsmtl = d.get_dict_struct(Impedance(complex(form.series_impedance_mag.data), form.series_impedance_mult.data, form.series_impedance_measure.data, 'Série'))
+            zshmtl = d.get_dict_struct(Impedance(complex(form.shunt_impedance_mag.data), form.shunt_impedance_mult.data, form.shunt_impedance_measure.data, 'Shunt'))
+        mtl = MediumTLines(zsmtl, zshmtl, tmtl)
+        FormToObj.component_list.append(mtl)
+        return FormToObj.component_list
+
 
     @staticmethod
     def get_components():

@@ -1,11 +1,11 @@
 
 from multiprocessing.spawn import import_main_path
 from flask import render_template, url_for, flash, redirect, request
-from flask_app import app, db, bcrypt
-from flask_app.forms import RegistrationForm, LogInForm, PuGeneratorForm, PuTransformerForm
-from flask_app.models import User, Problem
+from app import app, db, bcrypt
+from app.forms import RegistrationForm, LogInForm, PuGeneratorForm, PuTransformerForm, PuShortTlineForm, PuMediumTlineForm
+from app.models import User, Problem
 from flask_login import login_user, current_user, logout_user, login_required
-import flask_app.puconvertions as pucv
+import app.puconvertions as pucv
 import sys
 
 db.create_all()
@@ -63,11 +63,29 @@ def account():
 @app.route("/puconversions", methods=['GET', 'POST'])
 @login_required
 def pu_conversion():
+    valid_submit = False
     component_list = pucv.FormToObj.get_components()
     gen_form = PuGeneratorForm()
     tran_form = PuTransformerForm()
+    short_tline_form = PuShortTlineForm()
+    medium_tline_form = PuMediumTlineForm()
     if gen_form.validate_on_submit():
+        valid_submit = True
         component_list = pucv.FormToObj.generator(gen_form)
     if tran_form.validate_on_submit():
+        valid_submit = True
         component_list = pucv.FormToObj.transformer(tran_form)
-    return render_template("puconversions.html", title='Conversão Pu', gen_form=gen_form, tran_form=tran_form, component_list=component_list)
+    if short_tline_form.validate_on_submit() and short_tline_form.submit_stl.data:
+        valid_submit = True
+        component_list = pucv.FormToObj.short_tline(short_tline_form)
+    if medium_tline_form.validate_on_submit() and medium_tline_form.submit_mtl.data:
+        valid_submit = True
+        component_list = pucv.FormToObj.medium_tline(medium_tline_form)
+        
+    if valid_submit:
+        return redirect(url_for("pu_conversion"))
+    else:
+        return render_template("puconversions.html", title='Conversão Pu', 
+                                gen_form=gen_form, tran_form=tran_form, 
+                                short_tline_form=short_tline_form, medium_tline_form=medium_tline_form, 
+                                component_list=component_list)
