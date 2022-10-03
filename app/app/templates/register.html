@@ -1,89 +1,85 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="container-fluid" style="height: 80vh">
-        <div class="row justify-content-md-center h-100">
-            <div class="col-md-6 my-auto">
-                <form method="POST" action="" class="bg-light px-3" novalidate>
-                    {{ form.hidden_tag() }}
-                    <h1 class="fw-light fs-3 text-center">Registro</h1>
-                    <div class="dropdown-divider"></div>
-                    <fieldset>
-                        <div class="input-group my-3">
-                            <span class="input-group-text" id="basic-addon1">🏷️</span>
-                            <div class="form-floating flex-fill">
-                                {% if form.username.errors %}
-                                    {{ form.username(class="form-control is-invalid", placeholder="Nome Completo") }}
-                                    <div class="invalid-feedback text-center">
-                                        {% for error in form.username.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.username(class="form-control", placeholder="Nome Completo") }}
-                                {% endif %}
-                                {{ form.username.label(class="form-control-label") }}
-                            </div>
+    <div class="d-flex flex-column">
+        <div class="row justify-content-center p-0 m-0">
+            <form method="POST" action="" class="bg-white w-50" novalidate>
+                {{ form.hidden_tag() }}
+                <h1 class="fw-light fs-3 text-center border-bottom border-dark pb-3">Registro</h1>
+                <fieldset>
+                    <div class="input-group my-3">
+                        <span class="input-group-text" id="basic-addon1">🏷️</span>
+                        <div class="form-floating flex-fill">
+                            {% if form.username.errors %}
+                                {{ form.username(class="form-control is-invalid", placeholder="Nome Completo") }}
+                                <div class="invalid-feedback text-center">
+                                    {% for error in form.username.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.username(class="form-control", placeholder="Nome Completo") }}
+                            {% endif %}
+                            {{ form.username.label(class="form-control-label") }}
                         </div>
-                        <div class="input-group my-3">
-                            <span class="input-group-text" id="basic-addon2">📧</span>
-                            <div class="form-floating flex-fill">
-                                {% if form.email.errors %}
-                                    {{ form.email(class="form-control is-invalid", placeholder="Nome@email.com") }}
-                                    <div class="invalid-feedback text-center">
-                                        {% for error in form.email.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>                                    
-                                {% else %}
-                                    {{ form.email(class="form-control", placeholder="Nome@email.com") }}
-                                {% endif %}
-                                {{ form.email.label(class="form-control-label") }}
-                            </div>
-                        </div>
-                        <div class="input-group my-3">
-                            <span class="input-group-text" id="basic-addon3">🔒</span>
-                            <div class="form-floating flex-fill">
-                                {% if form.password.errors %}
-                                    {{ form.password(class="form-control is-invalid", placeholder="Senha") }}
-                                    <div class="invalid-feedback text-center">
-                                        {% for error in form.password.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.password(class="form-control", placeholder="Senha") }}
-                                {% endif %}
-                                {{ form.password.label(class="form-control-label") }}
-                            </div>
-                        </div>
-                        <div class="input-group mt-3">
-                            <span class="input-group-text" id="basic-addon3">🔒</span>
-                            <div class="form-floating flex-fill">
-                                {% if form.confirm_password.errors %}
-                                    {{ form.confirm_password(class="form-control is-invalid", placeholder="Confirmar senha") }}
-                                    <div class="invalid-feedback text-center">
-                                        {% for error in form.confirm_password.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.confirm_password(class="form-control", placeholder="Confirmar senha") }}
-                                {% endif %}
-                                {{ form.confirm_password.label(class="form-control-label") }}
-                            </div>
-                        </div>    
-                    </fieldset>
-                    <div class="form-floating mt-3">
-                        {{ form.submit(class="btn btn-primary mb-3 w-100") }}
                     </div>
-                </form>
-                <div class="dropdown-divider"></div>
-                <div class="ps-3">
-                    <small class="text-muted fs-6">
-                        Já tem uma conta? <a class="text-decoration-none" href="{{ url_for('login') }}">Entrar</a>
-                    </small>
+                    <div class="input-group my-3">
+                        <span class="input-group-text" id="basic-addon2">📧</span>
+                        <div class="form-floating flex-fill">
+                            {% if form.email.errors %}
+                                {{ form.email(class="form-control is-invalid", placeholder="Nome@email.com") }}
+                                <div class="invalid-feedback text-center">
+                                    {% for error in form.email.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>                                    
+                            {% else %}
+                                {{ form.email(class="form-control", placeholder="Nome@email.com") }}
+                            {% endif %}
+                            {{ form.email.label(class="form-control-label") }}
+                        </div>
+                    </div>
+                    <div class="input-group my-3">
+                        <span class="input-group-text" id="basic-addon3">🔒</span>
+                        <div class="form-floating flex-fill">
+                            {% if form.password.errors %}
+                                {{ form.password(class="form-control is-invalid", placeholder="Senha") }}
+                                <div class="invalid-feedback text-center">
+                                    {% for error in form.password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.password(class="form-control", placeholder="Senha") }}
+                            {% endif %}
+                            {{ form.password.label(class="form-control-label") }}
+                        </div>
+                    </div>
+                    <div class="input-group mt-3">
+                        <span class="input-group-text" id="basic-addon3">🔒</span>
+                        <div class="form-floating flex-fill">
+                            {% if form.confirm_password.errors %}
+                                {{ form.confirm_password(class="form-control is-invalid", placeholder="Confirmar senha") }}
+                                <div class="invalid-feedback text-center">
+                                    {% for error in form.confirm_password.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.confirm_password(class="form-control", placeholder="Confirmar senha") }}
+                            {% endif %}
+                            {{ form.confirm_password.label(class="form-control-label") }}
+                        </div>
+                    </div>    
+                </fieldset>
+                <div class="form-floating mt-3 border-bottom border-dark">
+                    {{ form.submit(class="btn btn-primary mb-3 w-100") }}
                 </div>
-            </div>
+            </form>
+        </div>
+        <div class="row justify-content-center p-0 m-0 mt-3">
+            <small class="text-muted fs-6 w-50">
+                Já tem uma conta? <a class="text-decoration-none" href="{{ url_for('login') }}">Entrar</a>
+            </small>
         </div>
     </div>
 {% endblock content %}

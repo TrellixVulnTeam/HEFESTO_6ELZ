@@ -3,10 +3,9 @@
     <div class="container-fluid" style="height: 80vh">
         <div class="row justify-content-md-center h-100">
             <div class="col-md-6 my-auto">
-                <form method="POST" action="" class="bg-light px-3">
+                <form method="POST" action="" class="bg-white px-3">
                     {{ form.hidden_tag() }}
-                    <h1 class="fw-light fs-3 text-center">Entrar</h1>
-                    <div class="dropdown-divider"></div>
+                    <h1 class="fw-light fs-3 text-center border-bottom border-dark pb-3">Entrar</h1>
                     <fieldset>
                         <div class="input-group my-3">
                             <span class="input-group-text" id="basic-addon2">📧</span>
@@ -45,11 +44,10 @@
                             {{ form.remember(class="form-check-input") }}
                         </div>
                     </fieldset> 
-                    <div class="form-floating my-3">
+                    <div class="form-floating my-3 border-bottom border-dark pb-3">
                         {{ form.submit(class="btn btn-primary mb-3 w-100") }}
                     </div>
                 </form>
-                <div class="dropdown-divider"></div>
                 <div class="ps-3">
                     <small class="text-muted fs-6">
                         Esqueceu a senha? <a class="text-decoration-none" href="#">Refazer senha</a>

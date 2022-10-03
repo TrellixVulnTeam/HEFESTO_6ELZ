@@ -148,3 +148,52 @@ components = [g1, t1, l1, t2, t3, l2, t4, l3, t5, l4, t6]
 # vlt = d.get_dict_struct(Voltage(, 'k', 'V', ))
 # zput = d.get_dict_struct(Impedance(, '%', 'pu', 'series'))
 # t = Transformers(pt, vht, vlt, zput, tt)
+
+
+
+
+
+
+
+
+
+# System basis
+    base_values = [
+        Power(100, 'M', 'VA'),
+        Voltage(13.8, 'k', 'V', 1)
+    ]
+    # Generators
+    pg1, tg1 = Power(60, 'M', 'VA'), (0, 1)
+    vg1 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 1))
+    zpug1 = d.get_dict_struct(Impedance(30, '%', 'pu', 'series'))
+    g1 = Generators(zpug1, tg1, pg1, vg1)
+
+    # Transformers
+    pt1, tt1 = Power(50, 'M', 'VA'), (1, 2) 
+    vht1 = d.get_dict_struct(Voltage(132, 'k', 'V', 2))
+    vlt1 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 1))
+    zput1 = d.get_dict_struct(Impedance(5, '%', 'pu', 'series'))
+    t1 = Transformers(zput1, tt1, pt1, vht1, vlt1)
+    pt2, tt2 = Power(50, 'M', 'VA'), (3, 4)
+    vht2 = d.get_dict_struct(Voltage(135, 'k', 'V', 3))
+    vlt2 = d.get_dict_struct(Voltage(13.2, 'k', 'V', 4))
+    zput2 = d.get_dict_struct(Impedance(6, '%', 'pu', 'series'))
+    t2 = Transformers(zput2, tt2, pt2, vht2, vlt2)
+
+    # Medium Lines
+    zsl1 = d.get_dict_struct(Impedance(0.4j, ' ', 'ohm/km', 'series', 97))
+    zshl = d.get_dict_struct(Impedance(280j, ' ', 'kohm*km', 'shunt', 97))
+    tl1 = (2, 3)
+    l1 = MediumTLines(zsl1, zshl, tl1)
+    zsl2 = d.get_dict_struct(Impedance(1.05 + 0.4j, ' ', 'ohm/km', 'series', 150)) 
+    zshl2 = d.get_dict_struct(Impedance(280j, ' ', 'kohm*km', 'shunt', 150)) 
+    tl2 = (1, 5)
+    l2 = MediumTLines(zsl2, zshl2, tl2)
+
+    # Loads
+    pld1 = d.get_dict_struct(Power(35, 'M', 'VA'), base_values[0])
+    pfld1, tld1 = PowerFactor(0.98, 'adiantado'), (4, 0)
+    ld1 = Loads(tld1, pld1, pfld1)
+    pld2 = d.get_dict_struct(Power(2, 'M', 'W'), base_values[0])
+    pfld2, tld2 = PowerFactor(0.85, 'atrasado'), (5, 0)
+    ld2 = Loads(tld2, pld2, pfld2)

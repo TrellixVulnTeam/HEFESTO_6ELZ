@@ -1,4 +1,83 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>{{ current_user.username }}</h1>
+    <div class="row p-0">
+        <div class="col-sm-4 border border-dark rounded bg-light media p-3 mx-5 position-relative">
+            {% if not edit_account_form.submit_edit.data %}
+                <span class="d-flex justify-content-center"><img class="rounded-circle account-img" src="{{ image_file }}"></span>
+                <div class="media-body">
+                    <h2 class="account-heading d-flex justify-content-center">{{ current_user.username }}</h2>
+                    <p class="text-secondary d-flex justify-content-center">{{ current_user.email }}</p>
+                </div>
+                <form method="POST" action="" class="px-3">
+                    <span class="position-absolute top-0 start-100 translate-middle">
+                        {{ edit_account_form.submit_edit(class="btn-primary rounded-pill py-1 px-2") }}
+                    </span>
+                </form>
+            {% else %}
+                <span class="d-flex justify-content-center"><img class="rounded-circle account-img" src="{{ image_file }}"></span>
+                <div class="media-body">
+                    <div class="row justify-content-center p-0 m-0">
+                        <form method="POST" action="" enctype="multipart/form-data" novalidate>
+                            {{ update_account_form.hidden_tag() }}
+                            <fieldset>
+                                <div class="input-group my-3">
+                                    <span class="input-group-text" id="basic-addon1">🏷️</span>
+                                    <div class="form-floating flex-fill">
+                                        {% if update_account_form.username.errors %}
+                                            {{ update_account_form.username(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback text-center">
+                                                {% for error in update_account_form.username.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ update_account_form.username(class="form-control") }}
+                                        {% endif %}
+                                        {{ update_account_form.username.label(class="form-control-label") }}
+                                    </div>
+                                </div>
+                                <div class="input-group my-3">
+                                    <span class="input-group-text" id="basic-addon2">📧</span>
+                                    <div class="form-floating flex-fill">
+                                        {% if update_account_form.email.errors %}
+                                            {{ update_account_form.email(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback text-center">
+                                                {% for error in update_account_form.email.errors %}
+                                                    <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>                                    
+                                        {% else %}
+                                            {{ update_account_form.email(class="form-control") }}
+                                        {% endif %}
+                                        {{ update_account_form.email.label(class="form-control-label") }}
+                                    </div>
+                                </div>
+                                <div class="input-group my-3">
+                                    <span class="input-group-text" id="basic-addon2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-up-fill" viewBox="0 0 16 16">
+                                            <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM6.354 9.854a.5.5 0 0 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 8.707V12.5a.5.5 0 0 1-1 0V8.707L6.354 9.854z"/>
+                                        </svg>
+                                    </span>
+                                    {{ update_account_form.picture(class="form-control-file") }}
+                                    {% if update_account_form.picture.errors %}
+                                        <div class="text-danger text-center">
+                                            {% for error in update_account_form.picture.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>                                    
+                                    {% endif %}
+                                </div>
+                            </fieldset>
+                            <div class="form-floating mt-3">
+                                {{ update_account_form.submit(class="btn btn-primary mb-3 w-100") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-sm border border-dark rounded bg-light media p-3 mx-5 position-relative">
+            
+        </div>
+    </div>
 {% endblock content %}

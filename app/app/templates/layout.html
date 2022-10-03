@@ -17,10 +17,10 @@
         <title> HEFESTO </title>
     {% endif %}
 </head>
-<body class="bg-white">
+<body class="bg-white position-relative">
     <!-- Snippet of navbar -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+        <nav class="navbar navbar-expand navbar-dark bg-dark fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="#">HEFESTO</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,8 +61,8 @@
     
     <!-- EndSnippet navbar-->
     <!-- Snippet of main -->
-    <main role="main" class="container p-0">
-        <div class="row" style="height: 80vh">
+    <main role="main" class="m-0 p-0">
+        <div class="m-0 p-0">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
